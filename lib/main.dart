@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'theme/app_theme.dart';
 import 'screens/home_screen.dart';
-import 'screens/calendar_screen.dart';
+import 'screens/calendar/calendar_main_screen.dart';
 import 'screens/square_screen.dart';
 import 'screens/inventory_screen.dart';
 
@@ -15,10 +17,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MyPlay',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ko', ''),
+        Locale('en', ''),
+      ],
       home: const MainScreen(),
     );
   }
@@ -36,7 +44,7 @@ class _MainScreenState extends State<MainScreen> {
   
   final List<Widget> _screens = [
     const HomeScreen(),
-    const CalendarScreen(),
+    const CalendarMainScreen(),
     const SquareScreen(),
     const InventoryScreen(),
   ];
