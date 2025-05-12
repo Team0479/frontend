@@ -6,6 +6,9 @@ import 'screens/calendar/calendar_main_screen.dart';
 import 'screens/square/square_main_screen.dart';
 import 'screens/inventory_screen.dart';
 
+// Global variable to store reviews (in a real app, this would be a state management solution)
+final List<Map<String, dynamic>> globalReviews = [];
+
 void main() {
   runApp(const MyApp());
 }
@@ -51,6 +54,13 @@ class _MainScreenState extends State<MainScreen> {
   ];
 
   void _onItemTapped(int index) {
+    // If navigating to the square screen, rebuild it with any new reviews
+    if (index == 2) {
+      setState(() {
+        _screens[2] = SquareMainScreen();
+      });
+    }
+    
     setState(() {
       _selectedIndex = index;
     });

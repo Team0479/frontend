@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class SquareReviewDetailScreen extends StatefulWidget {
-  const SquareReviewDetailScreen({super.key});
+  final Map<String, dynamic> review;
+  
+  const SquareReviewDetailScreen({
+    super.key, 
+    required this.review,
+  });
 
   @override
   State<SquareReviewDetailScreen> createState() => _SquareReviewDetailScreenState();
@@ -82,28 +87,36 @@ class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
                     ),
                   ),
                   
-                  // Review title & content
+                  // Performance title, Review title & content
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          '후기 제목 : ~~~~~~~~~~~~~~~~~~~~~~~~',
-                          style: TextStyle(
+                        Text(
+                          '공연 : ${widget.review['performanceTitle']}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          '후기 제목 : ${widget.review['reviewTitle']}',
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16.0,
                           ),
                         ),
                         const SizedBox(height: 8.0),
-                        const Text(
-                          '후기 본문 : ~~~~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
+                        Text(
+                          '후기 본문 : ${widget.review['reviewContent']}',
                         ),
                         const SizedBox(height: 16.0),
                         Row(
                           children: [
                             Text(
-                              '조회수 ?회 | 좋아요 ?개 | 댓글 ?개',
+                              '조회수 ${widget.review['views']}회 | 좋아요 ${widget.review['likes']}개 | 댓글 ${widget.review['comments']}개',
                               style: TextStyle(
                                 fontSize: 12.0,
                                 color: Colors.grey[600],

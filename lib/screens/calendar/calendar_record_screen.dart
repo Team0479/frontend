@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
 
-class CalendarRecordScreen extends StatelessWidget {
+class CalendarRecordScreen extends StatefulWidget {
   const CalendarRecordScreen({super.key});
+
+  @override
+  State<CalendarRecordScreen> createState() => _CalendarRecordScreenState();
+}
+
+class _CalendarRecordScreenState extends State<CalendarRecordScreen> {
+  final TextEditingController _performanceNameController = TextEditingController();
+  final TextEditingController _reviewTitleController = TextEditingController();
+  final TextEditingController _reviewContentController = TextEditingController();
+
+  @override
+  void dispose() {
+    _performanceNameController.dispose();
+    _reviewTitleController.dispose();
+    _reviewContentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +40,7 @@ class CalendarRecordScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
+              controller: _performanceNameController,
               decoration: InputDecoration(
                 labelText: '공연명',
                 hintText: '공연명을 입력하세요',
@@ -51,8 +69,21 @@ class CalendarRecordScreen extends StatelessWidget {
             const Text('후기 작성'),
             const SizedBox(height: 8),
             TextField(
+              controller: _reviewTitleController,
+              decoration: InputDecoration(
+                labelText: '후기 제목',
+                hintText: '제목을 입력하세요',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _reviewContentController,
               maxLines: 4,
               decoration: InputDecoration(
+                labelText: '후기 본문',
                 hintText: '내용을 입력하세요',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -63,7 +94,16 @@ class CalendarRecordScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Pass the data back to update in the square screen
+                  final data = {
+                    'performanceTitle': _performanceNameController.text,
+                    'reviewTitle': _reviewTitleController.text,
+                    'reviewContent': _reviewContentController.text,
+                    'date': DateTime.now(),
+                  };
+                  Navigator.pop(context, data);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[300],
                   foregroundColor: Colors.black,

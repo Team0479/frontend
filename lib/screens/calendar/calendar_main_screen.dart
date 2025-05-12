@@ -3,6 +3,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'calendar_schedule_screen.dart';
 import 'calendar_record_screen.dart';
 import 'package:intl/intl.dart';
+import '../square/square_main_screen.dart';
+import '../../main.dart';
 
 class CalendarMainScreen extends StatefulWidget {
   const CalendarMainScreen({super.key});
@@ -14,9 +16,9 @@ class CalendarMainScreen extends StatefulWidget {
 class _CalendarMainScreenState extends State<CalendarMainScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  final Map<DateTime, List<Map<String, String>>> _events = {};
+  final Map<DateTime, List<Map<String, dynamic>>> _events = {};
 
-  List<Map<String, String>> getEventsForDay(DateTime day) {
+  List<Map<String, dynamic>> getEventsForDay(DateTime day) {
     return _events[DateTime(day.year, day.month, day.day)] ?? [];
   }
 
@@ -71,12 +73,54 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
+                    onPressed: () async {
+                      final result = await Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => const CalendarRecordScreen(),
                         ),
                       );
+                      if (result != null && result is Map<String, dynamic>) {
+                        // Add event to calendar
+                        final DateTime date = result['date'];
+                        final key = DateTime(date.year, date.month, date.day);
+                        setState(() {
+                          _events.putIfAbsent(key, () => []);
+                          _events[key]!.add(result);
+                          _selectedDay = key;
+                          _focusedDay = key;
+                        });
+                        
+                        // Add to global reviews with default values
+                        final reviewData = {
+                          ...result,
+                          'views': 1,
+                          'likes': 0,
+                          'comments': 0,
+                        };
+                        globalReviews.insert(0, reviewData);
+                        
+                        // Now we need to handle passing this data to the SquareMainScreen
+                        // In a real app, this would update a database or shared state
+                        // For this example, we'll use a simplified approach
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text('관람 기록이 등록되었습니다. 광장에서 확인하세요.'),
+                            action: SnackBarAction(
+                              label: '광장으로 이동',
+                              onPressed: () {
+                                // Navigate to square screen with the new review data
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => SquareMainScreen(
+                                      newReview: result,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey[200],
