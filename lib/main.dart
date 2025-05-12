@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'theme/app_theme.dart';
 import 'screens/home_screen.dart';
 import 'screens/calendar/calendar_main_screen.dart';
-import 'screens/square_screen.dart';
+import 'screens/square/square_main_screen.dart';
 import 'screens/inventory_screen.dart';
 
 void main() {
@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'MyPlay',
       theme: AppTheme.lightTheme,
       localizationsDelegates: const [
@@ -45,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const CalendarMainScreen(),
-    const SquareScreen(),
+    const SquareMainScreen(),
     const InventoryScreen(),
   ];
 
