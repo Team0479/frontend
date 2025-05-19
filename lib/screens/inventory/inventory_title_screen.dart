@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+
+class InventoryTitleScreen extends StatelessWidget {
+  const InventoryTitleScreen({super.key});
+
+  Widget _buildTitleItem(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 16),
+          ),
+          const Spacer(),
+          IconButton(
+            icon: const Icon(Icons.check_circle_outline),
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text('마이 배치 / 칭호'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              _buildTitleItem('칭호 아이템'),
+              const Divider(),
+              _buildTitleItem('칭호 아이템'),
+              const Divider(),
+              _buildTitleItem('칭호 아이템'),
+              const Divider(),
+              _buildTitleItem('칭호 아이템'),
+              const Divider(),
+              _buildTitleItem('칭호 아이템'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

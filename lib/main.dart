@@ -4,7 +4,9 @@ import 'theme/app_theme.dart';
 import 'screens/home_screen.dart';
 import 'screens/calendar/calendar_main_screen.dart';
 import 'screens/square/square_main_screen.dart';
-import 'screens/inventory_screen.dart';
+import 'screens/inventory/inventory_main_screen.dart';
+import 'screens/inventory/inventory_mission_screen.dart';
+import 'screens/inventory/inventory_title_screen.dart';
 
 // Global variable to store reviews (in a real app, this would be a state management solution)
 final List<Map<String, dynamic>> globalReviews = [];
@@ -50,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),
     const CalendarMainScreen(),
     const SquareMainScreen(),
-    const InventoryScreen(),
+    const InventoryMainScreen(),
   ];
 
   void _onItemTapped(int index) {
