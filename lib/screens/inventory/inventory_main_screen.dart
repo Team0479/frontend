@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'inventory_mission_screen.dart';
 import 'inventory_title_screen.dart';
+import 'my_review_screen.dart';
 
 class InventoryMainScreen extends StatelessWidget {
   const InventoryMainScreen({super.key});
@@ -8,37 +9,73 @@ class InventoryMainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                '인벤토리',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey,
+      appBar: AppBar(
+        title: const Text('마이페이지'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            // 프로필 이미지와 정보 카드 (Stack)
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // 정보 카드
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(top: 50), // 프로필 이미지 반지름만큼 아래로
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0.5,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 60, 24, 20), // 위에 여백 넉넉히
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text('닉네임 : ~~~~~~'),
+                          SizedBox(height: 4),
+                          Text('아이디 : ~~~~~~'),
+                          SizedBox(height: 4),
+                          Text('마이 레벨 : ???'),
+                          SizedBox(height: 4),
+                          Text('마이 랭킹 : ~~~~~ 차트 ???위'),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
+                // 프로필 이미지 (카드 위에 겹치게)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // 미션 목록
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(height: 20),
-              const Text('닉네임 : -------'),
-              const Text('아이디 : -------'),
-              const Text('마이 레벨 : ???'),
-              const Text('마이 랭킹 : ------ 차트 ???위'),
-              const SizedBox(height: 30),
-              ListTile(
+              elevation: 0.5,
+              child: ListTile(
                 title: const Text('미션 목록'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
@@ -50,8 +87,15 @@ class InventoryMainScreen extends StatelessWidget {
                   );
                 },
               ),
-              ListTile(
-                title: const Text('마이 배치 / 칭호'),
+            ),
+            // 마이 칭호
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0.5,
+              child: ListTile(
+                title: const Text('마이 칭호'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(
@@ -62,15 +106,27 @@ class InventoryMainScreen extends StatelessWidget {
                   );
                 },
               ),
-              ListTile(
-                title: const Text('설정'),
+            ),
+            // 마이 리뷰
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0.5,
+              child: ListTile(
+                title: const Text('마이 리뷰'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
-                  // TODO: 설정 화면으로 이동
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyReviewScreen(),
+                    ),
+                  );
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

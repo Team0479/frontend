@@ -26,7 +26,7 @@ class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('후기 상세보기'),
+        title: const Text('리뷰 상세보기'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,

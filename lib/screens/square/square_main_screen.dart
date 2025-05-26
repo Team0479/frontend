@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'square_review_detail_screen.dart';
 import '../../main.dart';
+import 'review_write_screen.dart';
 
 class SquareMainScreen extends StatefulWidget {
   final Map<String, dynamic>? newReview;
@@ -96,7 +97,7 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Player 광장'),
+        title: const Text('플레이어 광장'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
@@ -229,6 +230,28 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ReviewWriteScreen()),
+          );
+          if (result != null && result is Map<String, dynamic>) {
+            final review = {
+              ...result,
+              'views': 1,
+              'likes': 0,
+              'comments': 0,
+            };
+            globalReviews.insert(0, review);
+            setState(() {
+              _reviews.insert(0, review);
+            });
+          }
+        },
+        child: const Icon(Icons.edit),
+        tooltip: '리뷰 작성',
       ),
     );
   }

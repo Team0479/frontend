@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'calendar_schedule_screen.dart';
-import 'calendar_record_screen.dart';
+import '../square/review_write_screen.dart';
 import 'package:intl/intl.dart';
 import '../square/square_main_screen.dart';
 import '../../main.dart';
@@ -37,105 +37,6 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final result = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const CalendarScheduleScreen(),
-                        ),
-                      );
-                      if (result != null && result is Map) {
-                        final DateTime date = result['date'];
-                        final key = DateTime(date.year, date.month, date.day);
-                        setState(() {
-                          _events.putIfAbsent(key, () => []);
-                          _events[key]!.add(result.map((k, v) => MapEntry(k.toString(), v.toString())));
-                          _selectedDay = key;
-                          _focusedDay = key;
-                        });
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[200],
-                      foregroundColor: Colors.black,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('일정 등록'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final result = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const CalendarRecordScreen(),
-                        ),
-                      );
-                      if (result != null && result is Map<String, dynamic>) {
-                        // Add event to calendar
-                        final DateTime date = result['date'];
-                        final key = DateTime(date.year, date.month, date.day);
-                        setState(() {
-                          _events.putIfAbsent(key, () => []);
-                          _events[key]!.add(result);
-                          _selectedDay = key;
-                          _focusedDay = key;
-                        });
-                        
-                        // Add to global reviews with default values
-                        final reviewData = {
-                          ...result,
-                          'views': 1,
-                          'likes': 0,
-                          'comments': 0,
-                        };
-                        globalReviews.insert(0, reviewData);
-                        
-                        // Now we need to handle passing this data to the SquareMainScreen
-                        // In a real app, this would update a database or shared state
-                        // For this example, we'll use a simplified approach
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text('관람 기록이 등록되었습니다. 광장에서 확인하세요.'),
-                            action: SnackBarAction(
-                              label: '광장으로 이동',
-                              onPressed: () {
-                                // Navigate to square screen with the new review data
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => SquareMainScreen(
-                                      newReview: result,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey[200],
-                      foregroundColor: Colors.black,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('관람 기록 등록'),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
             TableCalendar(
               firstDay: DateTime.utc(2020, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
@@ -220,6 +121,27 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
             ],
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const CalendarScheduleScreen(),
+            ),
+          );
+          if (result != null && result is Map) {
+            final DateTime date = result['date'];
+            final key = DateTime(date.year, date.month, date.day);
+            setState(() {
+              _events.putIfAbsent(key, () => []);
+              _events[key]!.add(result.map((k, v) => MapEntry(k.toString(), v.toString())));
+              _selectedDay = key;
+              _focusedDay = key;
+            });
+          }
+        },
+        child: const Icon(Icons.add),
+        tooltip: '일정 추가',
       ),
     );
   }

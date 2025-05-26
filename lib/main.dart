@@ -5,8 +5,7 @@ import 'screens/home_screen.dart';
 import 'screens/calendar/calendar_main_screen.dart';
 import 'screens/square/square_main_screen.dart';
 import 'screens/inventory/inventory_main_screen.dart';
-import 'screens/inventory/inventory_mission_screen.dart';
-import 'screens/inventory/inventory_title_screen.dart';
+import 'screens/login_screen.dart';
 
 // Global variable to store reviews (in a real app, this would be a state management solution)
 final List<Map<String, dynamic>> globalReviews = [];
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
         Locale('ko', ''),
         Locale('en', ''),
       ],
-      home: const MainScreen(),
+      home: const LoginScreen(),
     );
   }
 }

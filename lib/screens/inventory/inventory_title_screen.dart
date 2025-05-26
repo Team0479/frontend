@@ -4,29 +4,36 @@ class InventoryTitleScreen extends StatelessWidget {
   const InventoryTitleScreen({super.key});
 
   Widget _buildTitleItem(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.grey,
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      elevation: 0.5,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey,
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 16),
-          ),
-          const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.check_circle_outline),
-            onPressed: () {},
-          ),
-        ],
+            const SizedBox(width: 16),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const Spacer(),
+            IconButton(
+              icon: const Icon(Icons.check_circle_outline),
+              onPressed: () {},
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -39,7 +46,7 @@ class InventoryTitleScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('마이 배치 / 칭호'),
+        title: const Text('마이 칭호'),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -48,15 +55,11 @@ class InventoryTitleScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              _buildTitleItem('칭호 아이템'),
-              const Divider(),
-              _buildTitleItem('칭호 아이템'),
-              const Divider(),
-              _buildTitleItem('칭호 아이템'),
-              const Divider(),
-              _buildTitleItem('칭호 아이템'),
-              const Divider(),
-              _buildTitleItem('칭호 아이템'),
+              _buildTitleItem('칭호 이름'),
+              _buildTitleItem('칭호 이름'),
+              _buildTitleItem('칭호 이름'),
+              _buildTitleItem('칭호 이름'),
+              _buildTitleItem('칭호 이름'),
             ],
           ),
         ),

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CalendarRecordScreen extends StatefulWidget {
-  const CalendarRecordScreen({super.key});
+class ReviewWriteScreen extends StatefulWidget {
+  const ReviewWriteScreen({super.key});
 
   @override
-  State<CalendarRecordScreen> createState() => _CalendarRecordScreenState();
+  State<ReviewWriteScreen> createState() => _ReviewWriteScreenState();
 }
 
-class _CalendarRecordScreenState extends State<CalendarRecordScreen> {
+class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
   final TextEditingController _performanceNameController = TextEditingController();
   final TextEditingController _reviewTitleController = TextEditingController();
   final TextEditingController _reviewContentController = TextEditingController();
@@ -28,7 +28,7 @@ class _CalendarRecordScreenState extends State<CalendarRecordScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('관람 기록 등록'),
+        title: const Text('리뷰 등록'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
@@ -112,7 +112,7 @@ class _CalendarRecordScreenState extends State<CalendarRecordScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('관람 기록 등록'),
+                child: const Text('등록'),
               ),
             ),
           ],
