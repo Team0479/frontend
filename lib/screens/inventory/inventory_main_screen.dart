@@ -36,7 +36,7 @@ class InventoryMainScreen extends StatelessWidget {
               const Text('닉네임 : -------'),
               const Text('아이디 : -------'),
               const Text('마이 레벨 : ???'),
-              const Text('마이 포인트 : ------ 차감 ???개'),
+              const Text('마이 랭킹 : ------ 차트 ???위'),
               const SizedBox(height: 30),
               ListTile(
                 title: const Text('미션 목록'),
