@@ -9,7 +9,7 @@ class HomeScreen extends StatelessWidget {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('홈'),
+          title: Text('홈', style: Theme.of(context).appBarTheme.titleTextStyle),
           bottom: const TabBar(
             tabs: [
               Tab(text: '베스트 플레이어'),

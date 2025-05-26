@@ -30,4 +30,18 @@ flutter:
       fonts:
         - asset: assets/fonts/Pretendard-Regular.ttf
         - asset: assets/fonts/Pretendard-Bold.ttf
-          weight: 700 
+          weight: 700
+    - family: 8bitWonder
+      fonts:
+        - asset: assets/fonts/8bit_wonder.ttf
+    - family: PixeloidSans
+      fonts:
+        - asset: assets/fonts/PixeloidSans.ttf
+        - asset: assets/fonts/PixeloidSans-Bold.ttf
+          weight: 700
+    - family: DungGeunMo
+      fonts:
+        - asset: assets/fonts/DungGeunMo.ttf
+    - family: Galmuri14
+      fonts:
+        - asset: assets/fonts/Galmuri14.ttf 

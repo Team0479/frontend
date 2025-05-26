@@ -8,4 +8,6 @@ class AppColors {
   static const Color textSub = Color(0xFF8E8E93); // 서브 텍스트
   static const Color border = Color(0xFFE5E5EA); // 연한 테두리
   static const Color disabled = Color(0xFFF1F1F5); // 비활성 버튼
+  static const Color lightBlue = Color(0xFFC1D5EF); // 연파랑
+  static const Color lightPink = Color(0xFFF8E9F2); // 연핑크
 } 

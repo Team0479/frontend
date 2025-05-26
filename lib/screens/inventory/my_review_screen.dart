@@ -12,7 +12,7 @@ class MyReviewScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('마이 리뷰'),
+        title: Text('마이 리뷰', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,

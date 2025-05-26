@@ -5,6 +5,7 @@ import '../square/review_write_screen.dart';
 import 'package:intl/intl.dart';
 import '../square/square_main_screen.dart';
 import '../../main.dart';
+import '../../theme/colors.dart';
 
 class CalendarMainScreen extends StatefulWidget {
   const CalendarMainScreen({super.key});
@@ -26,7 +27,7 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('플레이 캘린더'),
+        title: Text('플레이 캘린더', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
@@ -103,7 +104,7 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: AppColors.lightBlue,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -123,6 +124,7 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.lightBlue,
         onPressed: () async {
           final result = await Navigator.of(context).push(
             MaterialPageRoute(

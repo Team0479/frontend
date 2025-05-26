@@ -28,7 +28,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('리뷰 등록'),
+        title: Text('리뷰 등록', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,

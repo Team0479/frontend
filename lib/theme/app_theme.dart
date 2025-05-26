@@ -5,7 +5,7 @@ import 'text_styles.dart';
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
-      fontFamily: 'Pretendard', // 또는 Roboto, NotoSans 등
+      fontFamily: 'PixeloidSans',
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.background,
       appBarTheme: const AppBarTheme(
@@ -13,13 +13,34 @@ class AppTheme {
         foregroundColor: AppColors.text,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.title,
+        titleTextStyle: AppTextStyles.pixelTitle,
       ),
       textTheme: const TextTheme(
-        bodyMedium: AppTextStyles.body,
-        titleLarge: AppTextStyles.title,
-        labelLarge: AppTextStyles.button,
-        bodySmall: AppTextStyles.caption,
+        bodyMedium: TextStyle(
+          fontFamily: 'PixeloidSans',
+          fontFamilyFallback: ['DungGeunMo'],
+          fontSize: 16,
+          color: AppColors.text,
+        ),
+        titleLarge: TextStyle(
+          fontFamily: '8bitWonder',
+          fontFamilyFallback: ['DungGeunMo'],
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          color: AppColors.text,
+        ),
+        labelLarge: TextStyle(
+          fontFamily: 'PixeloidSans',
+          fontFamilyFallback: ['DungGeunMo'],
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: AppColors.primary,
+        ),
+        bodySmall: TextStyle(
+          fontFamily: 'Galmuri14',
+          fontSize: 13,
+          color: AppColors.textSub,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

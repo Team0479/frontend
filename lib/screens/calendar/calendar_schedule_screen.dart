@@ -90,7 +90,7 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('일정 등록'),
+        title: Text('일정 등록', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,

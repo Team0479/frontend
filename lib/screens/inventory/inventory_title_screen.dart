@@ -46,7 +46,7 @@ class InventoryTitleScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('마이 칭호'),
+        title: Text('마이 칭호', style: Theme.of(context).appBarTheme.titleTextStyle),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),

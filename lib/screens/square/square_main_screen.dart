@@ -97,7 +97,7 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('플레이어 광장'),
+        title: Text('플레이어 광장', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
