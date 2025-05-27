@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/colors.dart';
 
 class InventoryMissionScreen extends StatelessWidget {
   const InventoryMissionScreen({super.key});
@@ -17,7 +18,7 @@ class InventoryMissionScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16, fontFamily: 'DungGeunMo'),
               ),
             ),
             Text(
@@ -39,7 +40,7 @@ class InventoryMissionScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('미션 목록', style: Theme.of(context).appBarTheme.titleTextStyle),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.appBarBlue,
         elevation: 0,
       ),
       body: SafeArea(

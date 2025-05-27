@@ -10,4 +10,5 @@ class AppColors {
   static const Color disabled = Color(0xFFF1F1F5); // 비활성 버튼
   static const Color lightBlue = Color(0xFFC1D5EF); // 연파랑
   static const Color lightPink = Color(0xFFF8E9F2); // 연핑크
+  static const Color appBarBlue = Color(0xFFAFC0DC); // 앱바 파랑
 } 

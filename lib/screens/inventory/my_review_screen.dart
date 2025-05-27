@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../main.dart';
+import '../../theme/colors.dart';
 
 class MyReviewScreen extends StatelessWidget {
   const MyReviewScreen({super.key});
@@ -15,8 +16,8 @@ class MyReviewScreen extends StatelessWidget {
         title: Text('마이 리뷰', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.appBarBlue,
+        foregroundColor: Colors.white,
       ),
       body: globalReviews.isEmpty
           ? const Center(
@@ -43,7 +44,7 @@ class MyReviewScreen extends StatelessWidget {
                       children: [
                         Text(
                           review['performanceTitle'] ?? '공연명',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'DungGeunMo'),
                         ),
                         const SizedBox(height: 8),
                         Row(
@@ -64,6 +65,7 @@ class MyReviewScreen extends StatelessWidget {
                                     style: const TextStyle(
                                       fontSize: 14.0,
                                       fontWeight: FontWeight.w600,
+                                      fontFamily: 'DungGeunMo',
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -71,7 +73,7 @@ class MyReviewScreen extends StatelessWidget {
                                     review['reviewContent'] ?? '',
                                     maxLines: 4,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 14.0),
+                                    style: const TextStyle(fontSize: 14.0, fontFamily: 'DungGeunMo'),
                                   ),
                                 ],
                               ),

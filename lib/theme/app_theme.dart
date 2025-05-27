@@ -9,11 +9,16 @@ class AppTheme {
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.background,
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.background,
-        foregroundColor: AppColors.text,
+        backgroundColor: AppColors.appBarBlue,
+        foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.pixelTitle,
+        titleTextStyle: TextStyle(
+          fontFamily: 'DungGeunMo',
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       ),
       textTheme: const TextTheme(
         bodyMedium: TextStyle(
@@ -94,7 +99,7 @@ class AppTheme {
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.background,
-        selectedItemColor: AppColors.primary,
+        selectedItemColor: AppColors.appBarBlue,
         unselectedItemColor: AppColors.textSub,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'square_review_detail_screen.dart';
 import '../../main.dart';
 import 'review_write_screen.dart';
+import '../../theme/colors.dart';
 
 class SquareMainScreen extends StatefulWidget {
   final Map<String, dynamic>? newReview;
@@ -100,8 +101,6 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
         title: Text('플레이어 광장', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
       ),
       body: Column(
         children: [
@@ -232,6 +231,7 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.lightBlue,
         onPressed: () async {
           final result = await Navigator.push(
             context,

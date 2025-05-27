@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/colors.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,12 +11,58 @@ class HomeScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text('홈', style: Theme.of(context).appBarTheme.titleTextStyle),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: '베스트 플레이어'),
-              Tab(text: '인기 플레이'),
-              Tab(text: '베스트 리뷰'),
-              Tab(text: '오늘의 플레이'),
+          bottom: TabBar(
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white,
+            indicator: BoxDecoration(
+              color: AppColors.appBarBlue,
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+            ),
+            tabs: const [
+              Tab(
+                child: Text(
+                  '베스트\n플레이어',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'DungGeunMo',
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  '인기\n플레이',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'DungGeunMo',
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  '베스트\n리뷰',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'DungGeunMo',
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Tab(
+                child: Text(
+                  '오늘의\n플레이',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'DungGeunMo',
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ],
           ),
         ),

@@ -13,8 +13,6 @@ class InventoryMainScreen extends StatelessWidget {
         title: Text('마이페이지', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -76,7 +74,7 @@ class InventoryMainScreen extends StatelessWidget {
               ),
               elevation: 0.5,
               child: ListTile(
-                title: const Text('미션 목록'),
+                title: Text('미션 목록', style: TextStyle(fontFamily: 'DungGeunMo')),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(
@@ -95,7 +93,7 @@ class InventoryMainScreen extends StatelessWidget {
               ),
               elevation: 0.5,
               child: ListTile(
-                title: const Text('마이 칭호'),
+                title: Text('마이 칭호', style: TextStyle(fontFamily: 'DungGeunMo')),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(
@@ -114,7 +112,7 @@ class InventoryMainScreen extends StatelessWidget {
               ),
               elevation: 0.5,
               child: ListTile(
-                title: const Text('마이 리뷰'),
+                title: Text('마이 리뷰', style: TextStyle(fontFamily: 'DungGeunMo')),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(

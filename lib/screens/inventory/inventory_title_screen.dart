@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/colors.dart';
 
 class InventoryTitleScreen extends StatelessWidget {
   const InventoryTitleScreen({super.key});
@@ -25,7 +26,7 @@ class InventoryTitleScreen extends StatelessWidget {
             const SizedBox(width: 16),
             Text(
               title,
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16, fontFamily: 'DungGeunMo'),
             ),
             const Spacer(),
             IconButton(
@@ -47,7 +48,7 @@ class InventoryTitleScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('마이 칭호', style: Theme.of(context).appBarTheme.titleTextStyle),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.appBarBlue,
         elevation: 0,
       ),
       body: SafeArea(
