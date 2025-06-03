@@ -16,8 +16,8 @@ class MyReviewScreen extends StatelessWidget {
         title: Text('마이 리뷰', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.appBarBlue,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.navBarBackground,
+        foregroundColor: Colors.black,
       ),
       body: globalReviews.isEmpty
           ? const Center(

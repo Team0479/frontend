@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/colors.dart';
 
 class SquareReviewDetailScreen extends StatefulWidget {
   final Map<String, dynamic> review;
@@ -29,7 +30,7 @@ class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
         title: Text('리뷰 상세보기', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.navBarBackground,
         foregroundColor: Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -158,12 +159,19 @@ class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
                         borderRadius: BorderRadius.circular(24.0),
                       ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      filled: true,
+                      fillColor: AppColors.navBarBackground,
                     ),
                   ),
                 ),
                 const SizedBox(width: 8.0),
                 IconButton(
                   icon: const Icon(Icons.add),
+                  color: Colors.white,
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll(AppColors.navBarBackground),
+                    shape: MaterialStatePropertyAll(CircleBorder()),
+                  ),
                   onPressed: () {},
                 ),
               ],

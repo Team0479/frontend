@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'inventory_mission_screen.dart';
 import 'inventory_title_screen.dart';
 import 'my_review_screen.dart';
+import '../../theme/colors.dart';
 
 class InventoryMainScreen extends StatelessWidget {
   const InventoryMainScreen({super.key});
@@ -13,6 +14,7 @@ class InventoryMainScreen extends StatelessWidget {
         title: Text('마이페이지', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
+        backgroundColor: AppColors.navBarBackground,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),

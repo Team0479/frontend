@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../theme/colors.dart';
 
 class CalendarScheduleScreen extends StatefulWidget {
   const CalendarScheduleScreen({super.key});
@@ -364,7 +365,7 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF1F1F5),
+                    backgroundColor: AppColors.navBarBackground,
                     foregroundColor: const Color(0xFF222222),
                     elevation: 0,
                     shape: RoundedRectangleBorder(

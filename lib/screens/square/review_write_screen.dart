@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/colors.dart';
 
 class ReviewWriteScreen extends StatefulWidget {
   const ReviewWriteScreen({super.key});
@@ -105,7 +106,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                   Navigator.pop(context, data);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[300],
+                  backgroundColor: AppColors.navBarBackground,
                   foregroundColor: Colors.black,
                   elevation: 0,
                   shape: RoundedRectangleBorder(

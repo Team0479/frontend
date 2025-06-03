@@ -17,7 +17,7 @@ class AppTheme {
           fontFamily: 'DungGeunMo',
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: Colors.black,
         ),
       ),
       textTheme: const TextTheme(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'theme/app_theme.dart';
+import 'theme/colors.dart';
 import 'screens/home_screen.dart';
 import 'screens/calendar/calendar_main_screen.dart';
 import 'screens/square/square_main_screen.dart';
@@ -73,22 +74,25 @@ class _MainScreenState extends State<MainScreen> {
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        backgroundColor: AppColors.navBarBackground,
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
+            icon: Image.asset('assets/images/nav_home.png', width: 50, height: 50),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: '캘린더',
+            icon: Image.asset('assets/images/nav_calendar.png', width: 50, height: 50),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: '광장',
+            icon: Image.asset('assets/images/nav_square.png', width: 50, height: 50),
+            label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.inventory),
-            label: '인벤토리',
+            icon: Image.asset('assets/images/nav_inventory.png', width: 50, height: 50),
+            label: '',
           ),
         ],
         currentIndex: _selectedIndex,

@@ -11,4 +11,7 @@ class AppColors {
   static const Color lightBlue = Color(0xFFC1D5EF); // 연파랑
   static const Color lightPink = Color(0xFFF8E9F2); // 연핑크
   static const Color appBarBlue = Color(0xFFAFC0DC); // 앱바 파랑
+  static const Color tabUnselected = Color(0xFFFFFFFF); // 선택 안된 탭(흰색)
+  static const Color tabSelected = Color(0xFFC1D5EF); // 선택된 탭
+  static const Color navBarBackground = Color(0xFFF8E9F2); // 네비게이션/앱바 연핑크
 } 

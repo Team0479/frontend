@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   
   // TODO: Replace these with actual values from your team member
   final String _clientId = '3f53ffa96a908a795ee96ed27c164a14';
-  final String _redirectUri = 'https://4655-1-229-162-20.ngrok-free.app/callback';
+  final String _redirectUri = 'https://278d-218-235-241-56.ngrok-free.app/callback';
   StreamSubscription? _linkSubscription;
 
   @override
@@ -150,9 +150,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   'MyPlay',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(fontSize: 32),
+                  style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(fontSize: 80),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 20),
                 TextField(
                   controller: _idController,
                   decoration: InputDecoration(
