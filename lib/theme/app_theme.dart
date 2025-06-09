@@ -9,14 +9,13 @@ class AppTheme {
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.background,
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.appBarBlue,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.white,
         elevation: 0,
-        centerTitle: true,
+        iconTheme: IconThemeData(color: AppColors.black),
         titleTextStyle: TextStyle(
-          fontFamily: 'DungGeunMo',
-          fontSize: 24,
+          fontFamily: 'Spoqa Han Sans Neo',
           fontWeight: FontWeight.bold,
+          fontSize: 22,
           color: Colors.black,
         ),
       ),
@@ -106,4 +105,16 @@ class AppTheme {
       ),
     );
   }
+}
+
+// Navigation Icons
+class NavIcons {
+  static const String home = 'assets/images/nav_home.png';
+  static const String homeUnselected = 'assets/images/nav_home_unselected.png';
+  static const String calendar = 'assets/images/nav_calendar.png';
+  static const String calendarUnselected = 'assets/images/nav_calendar_unselected.png';
+  static const String inventory = 'assets/images/nav_inventory.png';
+  static const String inventoryUnselected = 'assets/images/nav_inventory_unselected.png';
+  static const String square = 'assets/images/nav_square.png';
+  static const String squareUnselected = 'assets/images/nav_square_unselected.png';
 } 

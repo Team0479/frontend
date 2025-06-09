@@ -47,4 +47,14 @@ flutter:
         - asset: assets/fonts/DungGeunMo.ttf
     - family: Galmuri14
       fonts:
-        - asset: assets/fonts/Galmuri14.ttf 
+        - asset: assets/fonts/Galmuri14.ttf
+    - family: Spoqa Han Sans Neo
+      fonts:
+        - asset: assets/fonts/SpoqaHanSansNeo-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/SpoqaHanSansNeo-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/SpoqaHanSansNeo-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/SpoqaHanSansNeo-Light.ttf
+          weight: 300 

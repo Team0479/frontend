@@ -40,7 +40,7 @@ class InventoryMissionScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('미션 목록', style: Theme.of(context).appBarTheme.titleTextStyle),
-        backgroundColor: AppColors.navBarBackground,
+        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: SafeArea(

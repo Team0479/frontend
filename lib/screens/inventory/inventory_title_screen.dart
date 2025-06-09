@@ -48,7 +48,7 @@ class InventoryTitleScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text('마이 칭호', style: Theme.of(context).appBarTheme.titleTextStyle),
-        backgroundColor: AppColors.navBarBackground,
+        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: SafeArea(

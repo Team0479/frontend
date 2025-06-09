@@ -14,7 +14,7 @@ class InventoryMainScreen extends StatelessWidget {
         title: Text('마이페이지', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.navBarBackground,
+        backgroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
@@ -28,24 +28,52 @@ class InventoryMainScreen extends StatelessWidget {
                 // 정보 카드
                 Container(
                   width: double.infinity,
-                  margin: const EdgeInsets.only(top: 50), // 프로필 이미지 반지름만큼 아래로
+                  margin: const EdgeInsets.only(top: 50),
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 0.5,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 60, 24, 20), // 위에 여백 넉넉히
+                      padding: const EdgeInsets.fromLTRB(24, 60, 24, 20),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: const [
-                          Text('닉네임 : ~~~~~~'),
+                          Text('닉네임',
+                            style: TextStyle(
+                              fontFamily: 'Spoqa Han Sans Neo',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
                           SizedBox(height: 4),
-                          Text('아이디 : ~~~~~~'),
+                          Text('아이디',
+                            style: TextStyle(
+                              fontFamily: 'Spoqa Han Sans Neo',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
                           SizedBox(height: 4),
-                          Text('마이 레벨 : ???'),
+                          Text('마이 레벨 : Lv. ~~',
+                            style: TextStyle(
+                              fontFamily: 'Spoqa Han Sans Neo',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
                           SizedBox(height: 4),
-                          Text('마이 랭킹 : ~~~~~ 차트 ???위'),
+                          Text('마이 랭킹 : 차트 ~~위',
+                            style: TextStyle(
+                              fontFamily: 'Spoqa Han Sans Neo',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -62,7 +90,14 @@ class InventoryMainScreen extends StatelessWidget {
                       height: 100,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.grey,
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/profile_bg.png',
+                          fit: BoxFit.cover,
+                          width: 100,
+                          height: 100,
+                        ),
                       ),
                     ),
                   ),
@@ -76,7 +111,7 @@ class InventoryMainScreen extends StatelessWidget {
               ),
               elevation: 0.5,
               child: ListTile(
-                title: Text('미션 목록', style: TextStyle(fontFamily: 'DungGeunMo')),
+                title: Text('미션 목록', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500)),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(
@@ -95,7 +130,7 @@ class InventoryMainScreen extends StatelessWidget {
               ),
               elevation: 0.5,
               child: ListTile(
-                title: Text('마이 칭호', style: TextStyle(fontFamily: 'DungGeunMo')),
+                title: Text('마이 칭호', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500)),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(
@@ -114,7 +149,7 @@ class InventoryMainScreen extends StatelessWidget {
               ),
               elevation: 0.5,
               child: ListTile(
-                title: Text('마이 리뷰', style: TextStyle(fontFamily: 'DungGeunMo')),
+                title: Text('마이 리뷰', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500)),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(

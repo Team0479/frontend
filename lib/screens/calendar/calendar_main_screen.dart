@@ -30,7 +30,7 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
         title: Text('플레이 캘린더', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.navBarBackground,
+        backgroundColor: Colors.white,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

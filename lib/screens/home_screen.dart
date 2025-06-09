@@ -13,13 +13,8 @@ class HomeScreen extends StatelessWidget {
           final tabController = DefaultTabController.of(context);
           return Scaffold(
             appBar: AppBar(
-              title: Text('홈', style: const TextStyle(
-                fontFamily: 'DungGeunMo',
-                fontSize: 22,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              )),
-              backgroundColor: AppColors.navBarBackground,
+              title: Text('홈', style: Theme.of(context).appBarTheme.titleTextStyle),
+              backgroundColor: Colors.white,
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(56),
                 child: AnimatedBuilder(
@@ -27,13 +22,13 @@ class HomeScreen extends StatelessWidget {
                   builder: (context, _) {
                     int selected = tabController.index;
                     final tabTitles = [
-                      '베스트\n플레이어',
-                      '인기\n플레이',
-                      '베스트\n리뷰',
-                      '오늘의\n플레이',
+                      '베스트 플레이어',
+                      '인기 플레이',
+                      '베스트 리뷰',
+                      '오늘의 플레이',
                     ];
                     return Container(
-                      color: const Color(0xFFDEE6F1),
+                      color: Colors.transparent,
                       height: 48,
                       child: Row(
                         children: List.generate(4, (i) {
@@ -41,14 +36,15 @@ class HomeScreen extends StatelessWidget {
                             child: GestureDetector(
                               onTap: () => tabController.animateTo(i),
                               child: Container(
-                                color: selected == i ? AppColors.tabSelected : const Color(0xFFDEE6F1),
+                                color: selected == i ? Colors.white : AppColors.blue,
                                 alignment: Alignment.center,
                                 child: Text(
                                   tabTitles[i],
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontFamily: 'DungGeunMo',
-                                    fontSize: 14,
+                                  style: TextStyle(
+                                    fontFamily: 'Spoqa Han Sans Neo',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
                                     color: Colors.black,
                                   ),
                                 ),
@@ -84,88 +80,432 @@ class ChartTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tabName == '인기 플레이') {
-      // 피그마 스타일의 인기 플레이 탭
       final categories = [
         '뮤지컬', '콘서트', '스포츠', '전시/행사', '클래식/무용', '아동/가족', '연극', '레저/캠핑'
       ];
-      final cards = List.generate(10, (i) => i + 1);
+      final posters = [
+        'assets/images/poster1.png',
+        'assets/images/poster2.png',
+        'assets/images/poster3.png',
+        'assets/images/poster4.png',
+      ];
       return Container(
-        color: AppColors.lightBlue,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 카테고리 버튼 (가운데 정렬)
-            Center(
+            // 파랑색 카테고리 카드
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+              decoration: BoxDecoration(
+                color: AppColors.blue,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(3, 3),
+                  ),
+                ],
+              ),
               child: Wrap(
+                alignment: WrapAlignment.center,
                 spacing: 8,
-                runSpacing: 8,
-                children: categories.map((cat) => Chip(
-                  label: Text(cat, style: const TextStyle(fontFamily: 'DungGeunMo', fontSize: 11)),
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                runSpacing: 4,
+                children: categories.map((cat) => Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.lightBlue,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    cat,
+                    style: const TextStyle(
+                      fontFamily: 'Spoqa Han Sans Neo',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 10,
+                      color: Colors.black,
+                    ),
+                  ),
                 )).toList(),
               ),
             ),
-            const SizedBox(height: 16),
-            // 2x2 공연 카드 (10개, 스크롤 가능)
+            const SizedBox(height: 18),
+            // 연파랑색 공연 리스트 카드
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.7,
-                // 스크롤 가능하게 physics 기본값 사용
-                children: cards.map((num) => _PlayCard(index: num)).toList(),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.lightBlue,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(3, 3),
+                    ),
+                  ],
+                ),
+                child: GridView.builder(
+                  itemCount: 10,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 18,
+                    crossAxisSpacing: 18,
+                    childAspectRatio: 0.48,
+                  ),
+                  itemBuilder: (context, idx) {
+                    final poster = posters[idx % posters.length];
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 포스터
+                        Stack(
+                          children: [
+                            ClipRRect(
+                              //borderRadius: BorderRadius.circular(12),
+                              child: AspectRatio(
+                                aspectRatio: 0.7,
+                                child: Image.asset(
+                                  poster,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 8,
+                              left: 8,
+                              child: Container(
+                                width: 28,
+                                height: 28,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '${idx + 1}',
+                                  style: const TextStyle(
+                                    fontFamily: 'Spoqa Han Sans Neo',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        // 공연 정보
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '공연 제목 : ~~~~~~~~~~',
+                                style: const TextStyle(
+                                  fontFamily: 'Spoqa Han Sans Neo',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '공연 장소 : ~~~~~~~~',
+                                style: const TextStyle(
+                                  fontFamily: 'Spoqa Han Sans Neo',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              Text(
+                                '공연 기간 : ~~~~~~~~',
+                                style: const TextStyle(
+                                  fontFamily: 'Spoqa Han Sans Neo',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              Text(
+                                '예매율 : ~',
+                                style: const TextStyle(
+                                  fontFamily: 'Spoqa Han Sans Neo',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              Text(
+                                '공연 설명 : ~~~~~~~~',
+                                style: const TextStyle(
+                                  fontFamily: 'Spoqa Han Sans Neo',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 13,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ],
         ),
       );
     } else if (tabName == '베스트 리뷰') {
-      // 피그마 스타일의 베스트 리뷰 탭
-      final reviews = List.generate(4, (i) => i + 1);
+      final reviews = List.generate(10, (i) => i + 1);
       return Container(
-        color: AppColors.lightBlue,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         child: ListView.separated(
+          padding: EdgeInsets.zero,
           itemCount: reviews.length,
-          separatorBuilder: (context, idx) => const SizedBox(height: 16),
-          itemBuilder: (context, idx) => _ReviewCard(index: reviews[idx]),
+          separatorBuilder: (context, idx) => const SizedBox(height: 20),
+          itemBuilder: (context, idx) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 번호 원 (카드 바깥)
+                Container(
+                  width: 30,
+                  height: 30,
+                  margin: const EdgeInsets.only(right: 12, top: 8),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF3F3F3),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${idx + 1}',
+                    style: const TextStyle(
+                      fontFamily: 'Spoqa Han Sans Neo',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                // 리뷰 카드
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.lightBlue,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(3, 3),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.fromLTRB(14, 18, 14, 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '리뷰 제목',
+                          style: TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.asset(
+                                'assets/images/poster1.png',
+                                width: 80,
+                                height: 80,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text('내용 미리보기',
+                                    style: TextStyle(
+                                      fontFamily: 'Spoqa Han Sans Neo',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text('~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~',
+                                    style: TextStyle(
+                                      fontFamily: 'Spoqa Han Sans Neo',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 10,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        const Text('조회수 ?회 | 좋아요 ??개 | 댓글 ??개',
+                          style: TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 10,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       );
     } else if (tabName == '오늘의 플레이') {
-      // 피그마 스타일의 오늘의 플레이 탭
       final cards = List.generate(4, (i) => i + 1);
       return Container(
-        color: AppColors.lightBlue,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         child: Column(
           children: [
-            const SizedBox(height: 16),
+            // 안내 카드
             Container(
               width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                color: AppColors.blue,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(3, 3),
+                  ),
+                ],
               ),
               child: const Text(
                 '[유저 닉네임] 플레이어의\n메인 장르는 [장르명]입니다.\n맞춤 플레이를 추천해 드릴게요!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, height: 1.4),
+                style: TextStyle(
+                  fontFamily: 'Galmuri14',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: Colors.black,
+                  height: 1.4,
+                ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 18),
+            // 공연 추천 카드
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 24,
-                crossAxisSpacing: 24,
-                childAspectRatio: 0.7,
-                children: cards.map((num) => _TodayPlayCard(index: num)).toList(),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.lightBlue,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(3, 3),
+                    ),
+                  ],
+                ),
+                child: GridView.builder(
+                  itemCount: 4,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 18,
+                    crossAxisSpacing: 18,
+                    childAspectRatio: 0.48,
+                  ),
+                  itemBuilder: (context, idx) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          //borderRadius: BorderRadius.circular(12),
+                          child: AspectRatio(
+                            aspectRatio: 0.7,
+                            child: Image.asset(
+                              'assets/images/poster1.png',
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '공연 제목 : ~~~~~~~~~~',
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '공연 장소 : ~~~~~~~~',
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          '공연 기간 : ~~~~~~~~',
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          '예매율 : ~',
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          '공연 설명 : ~~~~~~~~',
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ],
@@ -291,36 +631,61 @@ class _ReviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text('리뷰 제목', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                    const SizedBox(height: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.lightBlue,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              'assets/images/poster1.png',
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text('내용 미리보기',
+                                  style: TextStyle(
+                                    fontFamily: 'Spoqa Han Sans Neo',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text('~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~',
+                                  style: TextStyle(
+                                    fontFamily: 'Spoqa Han Sans Neo',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 10,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 6),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 썸네일
-                        Container(
-                          width: 70,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[400],
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        // 내용 미리보기
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: Text('내용 미리보기', style: TextStyle(fontSize: 12, color: Colors.black54)),
-                              ),
-                              SizedBox(height: 2),
-                              Text('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
-                                style: TextStyle(fontSize: 12, color: Colors.black87)),
-                            ],
-                          ),
-                        ),
-                      ],
+                    const Text('조회수 ?회 | 좋아요 ??개 | 댓글 ??개',
+                      style: TextStyle(
+                        fontFamily: 'Spoqa Han Sans Neo',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                        color: Colors.black54,
+                      ),
                     ),
                   ],
                 ),

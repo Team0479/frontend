@@ -48,10 +48,29 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
+                labelStyle: const TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  color: Colors.black,
+                ),
+                hintStyle: const TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  color: Colors.grey,
+                ),
+              ),
+              style: const TextStyle(
+                fontFamily: 'Spoqa Han Sans Neo',
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 16),
-            const Text('사진 / 동영상 첨부하기'),
+            const Text('사진 / 동영상 첨부하기',
+              style: TextStyle(
+                fontFamily: 'Spoqa Han Sans Neo',
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
             const SizedBox(height: 8),
             Row(
               children: List.generate(3, (index) => Expanded(
@@ -67,7 +86,14 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
               )),
             ),
             const SizedBox(height: 16),
-            const Text('후기 작성'),
+            const Text('후기 작성',
+              style: TextStyle(
+                fontFamily: 'Spoqa Han Sans Neo',
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: _reviewTitleController,
@@ -77,6 +103,18 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
+                labelStyle: const TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  color: Colors.black,
+                ),
+                hintStyle: const TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  color: Colors.grey,
+                ),
+              ),
+              style: const TextStyle(
+                fontFamily: 'Spoqa Han Sans Neo',
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 12),
@@ -89,6 +127,18 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
+                labelStyle: const TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  color: Colors.black,
+                ),
+                hintStyle: const TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  color: Colors.grey,
+                ),
+              ),
+              style: const TextStyle(
+                fontFamily: 'Spoqa Han Sans Neo',
+                color: Colors.black,
               ),
             ),
             const Spacer(),
@@ -106,14 +156,20 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                   Navigator.pop(context, data);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.navBarBackground,
+                  backgroundColor: AppColors.lightBlue,
                   foregroundColor: Colors.black,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('등록'),
+                child: const Text('등록',
+                  style: TextStyle(
+                    fontFamily: 'Spoqa Han Sans Neo',
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
               ),
             ),
           ],

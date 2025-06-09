@@ -79,19 +79,23 @@ class _MainScreenState extends State<MainScreen> {
         backgroundColor: AppColors.navBarBackground,
         items: [
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/nav_home.png', width: 50, height: 50),
+            icon: Image.asset('assets/images/nav_home_unselected.png', width: 50, height: 50),
+            activeIcon: Image.asset('assets/images/nav_home.png', width: 50, height: 50),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/nav_calendar.png', width: 50, height: 50),
+            icon: Image.asset('assets/images/nav_calendar_unselected.png', width: 50, height: 50),
+            activeIcon: Image.asset('assets/images/nav_calendar.png', width: 50, height: 50),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/nav_square.png', width: 50, height: 50),
+            icon: Image.asset('assets/images/nav_square_unselected.png', width: 50, height: 50),
+            activeIcon: Image.asset('assets/images/nav_square.png', width: 50, height: 50),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Image.asset('assets/images/nav_inventory.png', width: 50, height: 50),
+            icon: Image.asset('assets/images/nav_inventory_unselected.png', width: 50, height: 50),
+            activeIcon: Image.asset('assets/images/nav_inventory.png', width: 50, height: 50),
             label: '',
           ),
         ],

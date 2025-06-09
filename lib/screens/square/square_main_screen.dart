@@ -101,7 +101,7 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
         title: Text('플레이어 광장', style: Theme.of(context).appBarTheme.titleTextStyle),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.navBarBackground,
+        backgroundColor: Colors.white,
       ),
       body: Column(
         children: [
@@ -137,7 +137,7 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Text('공연명', style: TextStyle(fontSize: 12.0)),
+                      const Text('공연명', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 12.0)),
                       const SizedBox(width: 4.0),
                       Icon(Icons.close, size: 16.0, color: Colors.grey[600]),
                     ],
@@ -164,8 +164,15 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                     margin: const EdgeInsets.only(bottom: 16.0),
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[200]!),
-                      borderRadius: BorderRadius.circular(8.0),
+                      color: AppColors.lightBlue,
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(3, 3),
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,8 +180,10 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                         Text(
                           review['performanceTitle'] ?? '제목 없음',
                           style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(height: 10.0),
@@ -185,7 +194,10 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                             Container(
                               height: 100.0,
                               width: 100.0,
-                              color: Colors.grey[300],
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
                             const SizedBox(width: 12.0),
                             // Right side - Text content
@@ -196,8 +208,10 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                                   Text(
                                     review['reviewTitle'] ?? '',
                                     style: const TextStyle(
+                                      fontFamily: 'Spoqa Han Sans Neo',
                                       fontSize: 14.0,
                                       fontWeight: FontWeight.w600,
+                                      color: Colors.black,
                                     ),
                                   ),
                                   const SizedBox(height: 4.0),
@@ -206,7 +220,9 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
+                                      fontFamily: 'Spoqa Han Sans Neo',
                                       fontSize: 14.0,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ],
@@ -217,9 +233,10 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                         const SizedBox(height: 10.0),
                         Text(
                           '조회수 ${review['views']}회 | 좋아요 ${review['likes']}개 | 댓글 ${review['comments']}개',
-                          style: TextStyle(
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
                             fontSize: 12.0,
-                            color: Colors.grey[600],
+                            color: Colors.black54,
                           ),
                         ),
                       ],
@@ -232,7 +249,8 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.navBarBackground,
+        backgroundColor: AppColors.lightBlue,
+        shape: const CircleBorder(),
         onPressed: () async {
           final result = await Navigator.push(
             context,
@@ -251,7 +269,7 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
             });
           }
         },
-        child: const Icon(Icons.edit),
+        child: const Icon(Icons.edit, color: Colors.black),
         tooltip: '리뷰 작성',
       ),
     );

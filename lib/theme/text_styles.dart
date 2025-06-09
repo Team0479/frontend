@@ -53,4 +53,56 @@ class AppTextStyles {
     fontSize: 13,
     color: AppColors.textSub,
   );
+
+  // 8bit Wonder
+  static const TextStyle bit8Title = TextStyle(
+    fontFamily: '8bitWonder',
+    fontSize: 24,
+    color: AppColors.black,
+  );
+
+  static const TextStyle bit8Body = TextStyle(
+    fontFamily: '8bitWonder',
+    fontSize: 16,
+    color: AppColors.black,
+  );
+
+  // DungGeunMo
+  static const TextStyle dungGeunMoTitle = TextStyle(
+    fontFamily: 'DungGeunMo',
+    fontSize: 24,
+    color: AppColors.black,
+  );
+
+  static const TextStyle dungGeunMoBody = TextStyle(
+    fontFamily: 'DungGeunMo',
+    fontSize: 16,
+    color: AppColors.black,
+  );
+
+  // Galmuri
+  static const TextStyle galmuriTitle = TextStyle(
+    fontFamily: 'Galmuri14',
+    fontSize: 24,
+    color: AppColors.black,
+  );
+
+  static const TextStyle galmuriBody = TextStyle(
+    fontFamily: 'Galmuri14',
+    fontSize: 16,
+    color: AppColors.black,
+  );
+
+  // Spoqa Han Sans Neo
+  static const TextStyle spoqaTitle = TextStyle(
+    fontFamily: 'Spoqa Han Sans Neo',
+    fontSize: 24,
+    color: AppColors.black,
+  );
+
+  static const TextStyle spoqaBody = TextStyle(
+    fontFamily: 'Spoqa Han Sans Neo',
+    fontSize: 16,
+    color: AppColors.black,
+  );
 } 
