@@ -94,18 +94,19 @@ class ChartTab extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
         child: Column(
           children: [
-            // 파랑색 카테고리 카드
+            // 연파랑색 카테고리 카드
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
               decoration: BoxDecoration(
-                color: AppColors.blue,
+                color: AppColors.lightBlue,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
-                    blurRadius: 8,
                     offset: const Offset(3, 3),
+                    blurRadius: 8,
+                    spreadRadius: 0,
                   ),
                 ],
               ),
@@ -116,14 +117,14 @@ class ChartTab extends StatelessWidget {
                 children: categories.map((cat) => Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.lightBlue,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     cat,
                     style: const TextStyle(
                       fontFamily: 'Spoqa Han Sans Neo',
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
                       fontSize: 10,
                       color: Colors.black,
                     ),
@@ -131,81 +132,48 @@ class ChartTab extends StatelessWidget {
                 )).toList(),
               ),
             ),
-            const SizedBox(height: 18),
-            // 연파랑색 공연 리스트 카드
+            const SizedBox(height: 8),
             Expanded(
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.lightBlue,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      offset: const Offset(3, 3),
-                    ),
-                  ],
+              child: GridView.builder(
+                itemCount: 10,
+                padding: EdgeInsets.zero,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 24,
+                  crossAxisSpacing: 18,
+                  childAspectRatio: 0.45,
                 ),
-                child: GridView.builder(
-                  itemCount: 10,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 18,
-                    crossAxisSpacing: 18,
-                    childAspectRatio: 0.48,
-                  ),
-                  itemBuilder: (context, idx) {
-                    final poster = posters[idx % posters.length];
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 포스터
-                        Stack(
-                          children: [
-                            ClipRRect(
-                              //borderRadius: BorderRadius.circular(12),
-                              child: AspectRatio(
-                                aspectRatio: 0.7,
-                                child: Image.asset(
-                                  poster,
-                                  fit: BoxFit.contain,
-                                ),
+                itemBuilder: (context, idx) {
+                  final poster = posters[idx % posters.length];
+                  return Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: AspectRatio(
+                              aspectRatio: 0.7,
+                              child: Image.asset(
+                                poster,
+                                fit: BoxFit.contain,
                               ),
                             ),
-                            Positioned(
-                              top: 8,
-                              left: 8,
-                              child: Container(
-                                width: 28,
-                                height: 28,
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  '${idx + 1}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Spoqa Han Sans Neo',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                  ),
-                                ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            left: 8,
+                            child: Container(
+                              width: 28,
+                              height: 28,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        // 공연 정보
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '공연 제목 : ~~~~~~~~~~',
+                              alignment: Alignment.center,
+                              child: Text(
+                                '${idx + 1}',
                                 style: const TextStyle(
                                   fontFamily: 'Spoqa Han Sans Neo',
                                   fontWeight: FontWeight.w500,
@@ -213,50 +181,68 @@ class ChartTab extends StatelessWidget {
                                   color: Colors.black,
                                 ),
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '공연 장소 : ~~~~~~~~',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              Text(
-                                '공연 기간 : ~~~~~~~~',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              Text(
-                                '예매율 : ~',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              Text(
-                                '공연 설명 : ~~~~~~~~',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text(
+                              '공연 제목 : ~~~~~~~~~~',
+                              style: TextStyle(
+                                fontFamily: 'Spoqa Han Sans Neo',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              '공연 장소 : ~~~~~~~~',
+                              style: TextStyle(
+                                fontFamily: 'Spoqa Han Sans Neo',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              '공연 기간 : ~~~~~~~~',
+                              style: TextStyle(
+                                fontFamily: 'Spoqa Han Sans Neo',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              '예매율 : ~',
+                              style: TextStyle(
+                                fontFamily: 'Spoqa Han Sans Neo',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              '공연 설명 : ~~~~~~~~',
+                              style: TextStyle(
+                                fontFamily: 'Spoqa Han Sans Neo',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    );
-                  },
-                ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],
@@ -277,8 +263,8 @@ class ChartTab extends StatelessWidget {
               children: [
                 // 번호 원 (카드 바깥)
                 Container(
-                  width: 30,
-                  height: 30,
+                  width: 25,
+                  height: 25,
                   margin: const EdgeInsets.only(right: 12, top: 8),
                   decoration: const BoxDecoration(
                     color: Color(0xFFF3F3F3),
@@ -289,91 +275,100 @@ class ChartTab extends StatelessWidget {
                     '${idx + 1}',
                     style: const TextStyle(
                       fontFamily: 'Spoqa Han Sans Neo',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 13,
                       color: Colors.black,
                     ),
                   ),
                 ),
                 // 리뷰 카드
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.lightBlue,
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(3, 3),
+                Container(
+                  width: 325,
+                  height: 122,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.lightBlue, width: 1.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        offset: const Offset(3, 3),
+                        blurRadius: 8,
+                        spreadRadius: 0,
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '리뷰 제목',
+                        style: TextStyle(
+                          fontFamily: 'Spoqa Han Sans Neo',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          color: Colors.black,
                         ),
-                      ],
-                    ),
-                    padding: const EdgeInsets.fromLTRB(14, 18, 14, 14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          '리뷰 제목',
-                          style: TextStyle(
-                            fontFamily: 'Spoqa Han Sans Neo',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                'assets/images/poster1.png',
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
-                              ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.asset(
+                              'assets/images/poster1.png',
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
                             ),
-                            const SizedBox(width: 10),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text('내용 미리보기',
-                                    style: TextStyle(
-                                      fontFamily: 'Spoqa Han Sans Neo',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text('~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~',
-                                    style: TextStyle(
-                                      fontFamily: 'Spoqa Han Sans Neo',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 10,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        const Text('조회수 ?회 | 좋아요 ??개 | 댓글 ??개',
-                          style: TextStyle(
-                            fontFamily: 'Spoqa Han Sans Neo',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 10,
-                            color: Colors.black54,
                           ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text('내용 미리보기',
+                                  style: TextStyle(
+                                    fontFamily: 'Spoqa Han Sans Neo',
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 10,
+                                    color: Colors.black,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 1),
+                                Text('~~~~~~~~~~~~~~~~~~~\n~~~~~~~~~~~~~~~~~~~~~',
+                                  style: TextStyle(
+                                    fontFamily: 'Spoqa Han Sans Neo',
+                                    fontWeight: FontWeight.w300,
+                                    fontSize: 8,
+                                    color: Colors.black,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      const Text('조회수 ?회 | 좋아요 ??개 | 댓글 ??개',
+                        style: TextStyle(
+                          fontFamily: 'Spoqa Han Sans Neo',
+                          fontWeight: FontWeight.w300,
+                          fontSize: 8,
+                          color: Colors.black54,
                         ),
-                      ],
-                    ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
               ],

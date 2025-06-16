@@ -9,21 +9,42 @@ class InventoryMissionScreen extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      elevation: 0.5,
+      elevation: 0.0,
       margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.lightBlue,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(3, 3),
+            ),
+          ],
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Row(
           children: [
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(fontSize: 16, fontFamily: 'DungGeunMo'),
+                style: const TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  color: Colors.black,
+                ),
               ),
             ),
             Text(
               progress,
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(
+                fontFamily: 'Spoqa Han Sans Neo',
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: Colors.black,
+              ),
             ),
           ],
         ),

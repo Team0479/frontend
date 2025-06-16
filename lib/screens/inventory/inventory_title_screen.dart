@@ -4,43 +4,15 @@ import '../../theme/colors.dart';
 class InventoryTitleScreen extends StatelessWidget {
   const InventoryTitleScreen({super.key});
 
-  Widget _buildTitleItem(String title) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      elevation: 0.5,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.grey,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontFamily: 'DungGeunMo'),
-            ),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.check_circle_outline),
-              onPressed: () {},
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final titleImages = [
+      'assets/images/title1.png',
+      'assets/images/title2.png',
+      'assets/images/title3.png',
+      'assets/images/title4.png',
+      'assets/images/title5.png',
+    ];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -51,19 +23,32 @@ class InventoryTitleScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              _buildTitleItem('칭호 이름'),
-              _buildTitleItem('칭호 이름'),
-              _buildTitleItem('칭호 이름'),
-              _buildTitleItem('칭호 이름'),
-              _buildTitleItem('칭호 이름'),
-            ],
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/title_bg.png',
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
+          SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 32),
+                    for (final img in titleImages)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Image.asset(img, width: 320),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

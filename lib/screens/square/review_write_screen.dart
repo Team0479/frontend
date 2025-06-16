@@ -40,26 +40,46 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _performanceNameController,
-              decoration: InputDecoration(
-                labelText: '공연명',
-                hintText: '공연명을 입력하세요',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            const Text(
+              '공연명',
+              style: TextStyle(
+                fontFamily: 'Spoqa Han Sans Neo',
+                fontSize: 17,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: 348,
+              height: 48,
+              child: TextField(
+                controller: _performanceNameController,
+                decoration: InputDecoration(
+                  hintText: '공연명을 입력하세요',
+                  hintStyle: const TextStyle(
+                    fontFamily: 'Spoqa Han Sans Neo',
+                    color: Color(0xFF9D9D9D),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
+                  ),
                 ),
-                labelStyle: const TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Spoqa Han Sans Neo',
                   color: Colors.black,
                 ),
-                hintStyle: const TextStyle(
-                  fontFamily: 'Spoqa Han Sans Neo',
-                  color: Colors.grey,
-                ),
-              ),
-              style: const TextStyle(
-                fontFamily: 'Spoqa Han Sans Neo',
-                color: Colors.black,
               ),
             ),
             const SizedBox(height: 16),
@@ -67,7 +87,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
               style: TextStyle(
                 fontFamily: 'Spoqa Han Sans Neo',
                 fontWeight: FontWeight.w500,
-                fontSize: 14,
+                fontSize: 17,
                 color: Colors.black,
               ),
             ),
@@ -86,91 +106,119 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
               )),
             ),
             const SizedBox(height: 16),
-            const Text('후기 작성',
+            const Text('리뷰 작성',
               style: TextStyle(
                 fontFamily: 'Spoqa Han Sans Neo',
                 fontWeight: FontWeight.w500,
-                fontSize: 14,
+                fontSize: 17,
                 color: Colors.black,
               ),
             ),
             const SizedBox(height: 8),
-            TextField(
-              controller: _reviewTitleController,
-              decoration: InputDecoration(
-                labelText: '후기 제목',
-                hintText: '제목을 입력하세요',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                labelStyle: const TextStyle(
-                  fontFamily: 'Spoqa Han Sans Neo',
-                  color: Colors.black,
-                ),
-                hintStyle: const TextStyle(
-                  fontFamily: 'Spoqa Han Sans Neo',
-                  color: Colors.grey,
-                ),
-              ),
-              style: const TextStyle(
-                fontFamily: 'Spoqa Han Sans Neo',
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _reviewContentController,
-              maxLines: 4,
-              decoration: InputDecoration(
-                labelText: '후기 본문',
-                hintText: '내용을 입력하세요',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                labelStyle: const TextStyle(
-                  fontFamily: 'Spoqa Han Sans Neo',
-                  color: Colors.black,
-                ),
-                hintStyle: const TextStyle(
-                  fontFamily: 'Spoqa Han Sans Neo',
-                  color: Colors.grey,
-                ),
-              ),
-              style: const TextStyle(
-                fontFamily: 'Spoqa Han Sans Neo',
-                color: Colors.black,
-              ),
-            ),
-            const Spacer(),
             SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Pass the data back to update in the square screen
-                  final data = {
-                    'performanceTitle': _performanceNameController.text,
-                    'reviewTitle': _reviewTitleController.text,
-                    'reviewContent': _reviewContentController.text,
-                    'date': DateTime.now(),
-                  };
-                  Navigator.pop(context, data);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.lightBlue,
-                  foregroundColor: Colors.black,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              width: 348,
+              height: 48,
+              child: TextField(
+                controller: _reviewTitleController,
+                decoration: InputDecoration(
+                  hintText: '리뷰 제목을 입력하세요',
+                  hintStyle: const TextStyle(
+                    fontFamily: 'Spoqa Han Sans Neo',
+                    color: Color(0xFF9D9D9D),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
                   ),
                 ),
-                child: const Text('등록',
-                  style: TextStyle(
-                    fontFamily: 'Spoqa Han Sans Neo',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
+                style: const TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  color: Colors.black,
                 ),
               ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: 348,
+              height: 300,
+              child: TextField(
+                controller: _reviewContentController,
+                maxLines: 10,
+                decoration: InputDecoration(
+                  hintText: '리뷰 내용을 입력하세요',
+                  hintStyle: const TextStyle(
+                    fontFamily: 'Spoqa Han Sans Neo',
+                    color: Color(0xFF9D9D9D),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
+                  ),
+                ),
+                style: const TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  color: Colors.black,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(
+                  width: 126,
+                  height: 44,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final data = {
+                        'performanceTitle': _performanceNameController.text,
+                        'reviewTitle': _reviewTitleController.text,
+                        'reviewContent': _reviewContentController.text,
+                        'date': DateTime.now(),
+                      };
+                      Navigator.pop(context, data);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.lightBlue,
+                      foregroundColor: Colors.black,
+                      elevation: 4,
+                      shadowColor: AppColors.lightBlue.withOpacity(0.4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: const Text('등록',
+                      style: TextStyle(
+                        fontFamily: 'Spoqa Han Sans Neo',
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

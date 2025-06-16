@@ -16,11 +16,26 @@ class SquareReviewDetailScreen extends StatefulWidget {
 class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
   final TextEditingController _commentController = TextEditingController();
   bool _isLiked = false;
+  List<Map<String, dynamic>> _comments = [];
+  final String _currentUser = '플레이어 닉네임'; // 임시 사용자 이름
 
   @override
   void dispose() {
     _commentController.dispose();
     super.dispose();
+  }
+
+  void _addComment() {
+    if (_commentController.text.trim().isEmpty) return;
+    
+    setState(() {
+      _comments.add({
+        'user': _currentUser,
+        'content': _commentController.text.trim(),
+        'timestamp': DateTime.now(),
+      });
+      _commentController.clear();
+    });
   }
 
   @override
@@ -153,6 +168,81 @@ class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
                       ],
                     ),
                   ),
+                  
+                  
+                  // Comments section
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      '댓글',
+                      style: TextStyle(
+                        fontFamily: 'Spoqa Han Sans Neo',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  _comments.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                          child: Text(
+                            '아직 댓글이 없습니다.',
+                            style: TextStyle(
+                              fontFamily: 'Spoqa Han Sans Neo',
+                              fontSize: 14.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _comments.length,
+                          itemBuilder: (context, index) {
+                            final comment = _comments[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        comment['user'],
+                                        style: const TextStyle(
+                                          fontFamily: 'Spoqa Han Sans Neo',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8.0),
+                                      Text(
+                                        _formatTimestamp(comment['timestamp']),
+                                        style: TextStyle(
+                                          fontFamily: 'Spoqa Han Sans Neo',
+                                          fontSize: 12.0,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4.0),
+                                  Text(
+                                    comment['content'],
+                                    style: const TextStyle(
+                                      fontFamily: 'Spoqa Han Sans Neo',
+                                      fontSize: 14.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                 ],
               ),
             ),
@@ -200,7 +290,7 @@ class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
                     ),
                     child: IconButton(
                       icon: const Icon(Icons.add, color: Colors.black),
-                      onPressed: () {},
+                      onPressed: _addComment,
                     ),
                   ),
                 ],
@@ -210,5 +300,22 @@ class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
         ],
       ),
     );
+  }
+
+  String _formatTimestamp(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+    
+    if (difference.inMinutes < 1) {
+      return '방금 전';
+    } else if (difference.inHours < 1) {
+      return '${difference.inMinutes}분 전';
+    } else if (difference.inDays < 1) {
+      return '${difference.inHours}시간 전';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}일 전';
+    } else {
+      return '${timestamp.year}.${timestamp.month}.${timestamp.day}';
+    }
   }
 } 

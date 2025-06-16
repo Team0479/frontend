@@ -32,8 +32,9 @@ class InventoryMainScreen extends StatelessWidget {
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(color: AppColors.blue, width: 1),
                     ),
-                    elevation: 0.5,
+                    elevation: 0.0,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(24, 60, 24, 20),
                       child: Column(
@@ -108,8 +109,9 @@ class InventoryMainScreen extends StatelessWidget {
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: AppColors.blue, width: 1),
               ),
-              elevation: 0.5,
+              elevation: 0.0,
               child: ListTile(
                 title: Text('미션 목록', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500)),
                 trailing: const Icon(Icons.chevron_right),
@@ -127,8 +129,9 @@ class InventoryMainScreen extends StatelessWidget {
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: AppColors.blue, width: 1),
               ),
-              elevation: 0.5,
+              elevation: 0.0,
               child: ListTile(
                 title: Text('마이 칭호', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500)),
                 trailing: const Icon(Icons.chevron_right),
@@ -146,8 +149,9 @@ class InventoryMainScreen extends StatelessWidget {
             Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: AppColors.blue, width: 1),
               ),
-              elevation: 0.5,
+              elevation: 0.0,
               child: ListTile(
                 title: Text('마이 리뷰', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500)),
                 trailing: const Icon(Icons.chevron_right),

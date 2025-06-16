@@ -74,27 +74,26 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleKakaoLogin() async {
-  final kakaoAuthUrl =
-      'https://kauth.kakao.com/oauth/authorize?response_type=code'
-      '&client_id=$_clientId'
-      '&redirect_uri=$_redirectUri';
+    final kakaoAuthUrl =
+        'https://kauth.kakao.com/oauth/authorize?response_type=code'
+        '&client_id=$_clientId'
+        '&redirect_uri=$_redirectUri';
 
-  final Uri kakaoUri = Uri.parse(kakaoAuthUrl);
+    final Uri kakaoUri = Uri.parse(kakaoAuthUrl);
 
-  if (await canLaunchUrl(kakaoUri)) {
-    await launchUrl(
-      kakaoUri,
-      mode: LaunchMode.externalApplication,
-    );
-  } else {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('카카오 로그인을 실행할 수 없습니다.')),
+    if (await canLaunchUrl(kakaoUri)) {
+      await launchUrl(
+        kakaoUri,
+        mode: LaunchMode.externalApplication,
       );
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('카카오 로그인을 실행할 수 없습니다.')),
+        );
+      }
     }
   }
-}
-
 
   Future<void> _handleCallback(String code) async {
     try {
@@ -126,93 +125,180 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.lightBlue,
-              AppColors.lightPink,
+  Widget _buildKakaoLoginButton() {
+    return Center(
+      child: GestureDetector(
+        onTap: _handleKakaoLogin,
+        child: Container(
+          width: 348,
+          height: 48,
+          decoration: BoxDecoration(
+            color: const Color(0xFFFAE655),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 16),
+              Image.asset(
+                'assets/images/kakao_icon.png',
+                width: 24,
+                height: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '카카오로 계속하기',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Spoqa Han Sans Neo',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 40), // 오른쪽 여백
             ],
           ),
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'MyPlay',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(fontSize: 80),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/login_bg.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 로고 자리 (비워둠)
+                    const SizedBox(height: 304),
+                    // 아이디 입력
+                    SizedBox(
+                      width: 348,
+                      height: 48,
+                      child: TextField(
+                        controller: _idController,
+                        style: const TextStyle(
+                          fontFamily: 'Spoqa Han Sans Neo',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: '아이디',
+                          hintStyle: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 14, color: Colors.grey),
+                          filled: true,
+                          fillColor: Color.fromRGBO(255, 255, 255, 0.65),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)), borderSide: BorderSide.none),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // 비밀번호 입력
+                    SizedBox(
+                      width: 348,
+                      height: 48,
+                      child: TextField(
+                        controller: _pwController,
+                        obscureText: true,
+                        style: const TextStyle(
+                          fontFamily: 'Spoqa Han Sans Neo',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: '비밀번호',
+                          hintStyle: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 14, color: Colors.grey),
+                          filled: true,
+                          fillColor: Color.fromRGBO(255, 255, 255, 0.65),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)), borderSide: BorderSide.none),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    // 로그인 버튼
+                    SizedBox(
+                      width: 348,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // TODO: 로그인 로직
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF4363EA),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          textStyle: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 14),
+                          elevation: 0,
+                        ),
+                        child: const Text('로그인'),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // 카카오 로그인 버튼
+                    _buildKakaoLoginButton(),
+                    const SizedBox(height: 12),
+                    // 회원가입 버튼
+                    SizedBox(
+                      width: 348,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // TODO: 회원가입 화면 이동
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD4D4D4),
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          textStyle: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 14),
+                          elevation: 0,
+                        ),
+                        child: const Text('회원가입'),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
                 ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _idController,
-                  decoration: InputDecoration(
-                    labelText: '아이디',
-                    labelStyle: const TextStyle(fontFamily: 'DungGeunMo', fontSize: 16),
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _pwController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: '비밀번호',
-                    labelStyle: const TextStyle(fontFamily: 'DungGeunMo', fontSize: 16),
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    // TODO: 로그인 로직
-                  },
-                  child: Text('로그인', style: const TextStyle(fontFamily: 'DungGeunMo', fontSize: 18)),
-                ),
-                const SizedBox(height: 8),
-                OutlinedButton(
-                  onPressed: () {
-                    // TODO: 회원가입 화면 이동
-                  },
-                  child: Text('회원가입', style: const TextStyle(fontFamily: 'DungGeunMo', fontSize: 18)),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _handleKakaoLogin,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFEE500), // 카카오 컬러
-                    foregroundColor: Colors.black,
-                  ),
-                  child: Text('카카오로 로그인', style: const TextStyle(fontFamily: 'DungGeunMo', fontSize: 18)),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    // 개발용: 메인으로 이동
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MainScreen()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueGrey,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text('메인으로 이동하기 (개발용)', style: const TextStyle(fontFamily: 'DungGeunMo', fontSize: 18)),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+          // 개발용 홈 이동 버튼 (화면 어디서나 접근 가능)
+          Positioned(
+            right: 16,
+            bottom: 32,
+            child: Opacity(
+              opacity: 0.7,
+              child: FloatingActionButton.small(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MainScreen()),
+                  );
+                },
+                child: const Icon(Icons.home),
+                tooltip: '개발용 홈 이동',
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
