@@ -13,7 +13,7 @@ class MyReviewScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('마이 리뷰', style: Theme.of(context).appBarTheme.titleTextStyle),
+        title: Text('마이 리뷰', style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(fontFamily: 'Spoqa Han Sans Neo')),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
@@ -23,69 +23,106 @@ class MyReviewScreen extends StatelessWidget {
           ? const Center(
               child: Text(
                 '작성한 리뷰가 없습니다.',
-                style: TextStyle(color: Colors.grey, fontSize: 16),
+                style: TextStyle(color: Colors.grey, fontSize: 16, fontFamily: 'Spoqa Han Sans Neo'),
               ),
             )
           : ListView.builder(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
               itemCount: globalReviews.length,
               itemBuilder: (context, index) {
                 final review = globalReviews[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0.5,
-                  child: Padding(
+                return Center(
+                  child: Container(
+                    width: 354,
+                    height: 145,
+                    margin: const EdgeInsets.only(bottom: 16.0),
                     padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          review['performanceTitle'] ?? '공연명',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'DungGeunMo'),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 100,
-                              height: 80,
-                              color: Colors.grey[300],
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    review['reviewTitle'] ?? '후기 제목',
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'DungGeunMo',
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    review['reviewContent'] ?? '',
-                                    maxLines: 4,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 14.0, fontFamily: 'DungGeunMo'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          '조회수 ${review['views'] ?? '?'}회 | 좋아요 ${review['likes'] ?? '?'}개 | 댓글 ${review['comments'] ?? '?'}개',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Color(0xFFE5EEFA), width: 1.5),
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 6,
+                          offset: const Offset(2, 2),
                         ),
                       ],
+                    ),
+                    child: SizedBox(
+                      height: 145,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            review['performanceTitle'] ?? '제목 없음',
+                            style: const TextStyle(
+                              fontFamily: 'Spoqa Han Sans Neo',
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(height: 2.0),
+                          Expanded(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Left side - Image
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    'assets/images/poster1.png',
+                                    width: 120,
+                                    height: 70,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: 8.0),
+                                // Right side - Text content
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        review['reviewTitle'] ?? '',
+                                        style: const TextStyle(
+                                          fontFamily: 'Spoqa Han Sans Neo',
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2.0),
+                                      Expanded(
+                                        child: Text(
+                                          review['reviewContent'] ?? '',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontFamily: 'Spoqa Han Sans Neo',
+                                            fontSize: 12.0,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 4.0),
+                          Text(
+                            '조회수 ${review['views']}회 | 좋아요 ${review['likes']}개 | 댓글 ${review['comments']}개',
+                            style: const TextStyle(
+                              fontFamily: 'Spoqa Han Sans Neo',
+                              fontSize: 10.0,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );

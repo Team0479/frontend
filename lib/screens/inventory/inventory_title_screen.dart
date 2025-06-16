@@ -8,10 +8,10 @@ class InventoryTitleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final titleImages = [
       'assets/images/title1.png',
-      'assets/images/title2.png',
-      'assets/images/title3.png',
-      'assets/images/title4.png',
-      'assets/images/title5.png',
+      'assets/images/title2_gray.png',
+      'assets/images/title3_gray.png',
+      'assets/images/title4_gray.png',
+      'assets/images/title5_gray.png',
     ];
     return Scaffold(
       appBar: AppBar(
@@ -39,10 +39,7 @@ class InventoryTitleScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 32),
                     for (final img in titleImages)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Image.asset(img, width: 320),
-                      ),
+                      Image.asset(img, width: 320),
                   ],
                 ),
               ),
