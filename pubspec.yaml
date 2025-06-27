@@ -18,6 +18,7 @@ dependencies:
   url_launcher: ^6.3.1
   http: ^1.4.0
   uni_links: ^0.5.1
+  inner_shadow_widget: ^0.0.2
 
 dev_dependencies:
   flutter_test:

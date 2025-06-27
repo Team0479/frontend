@@ -1,11 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'inventory_mission_screen.dart';
 import 'inventory_title_screen.dart';
 import 'my_review_screen.dart';
 import '../../theme/colors.dart';
 
-class InventoryMainScreen extends StatelessWidget {
+class InventoryMainScreen extends StatefulWidget {
   const InventoryMainScreen({super.key});
+
+  @override
+  State<InventoryMainScreen> createState() => _InventoryMainScreenState();
+}
+
+class _InventoryMainScreenState extends State<InventoryMainScreen> {
+  String? profileImage;
+  String? nickname;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jwt = prefs.getString('jwt_token');
+    final localAsset = prefs.getString('my_character_asset');
+    if (jwt == null) return;
+    final response = await http.get(
+      Uri.parse('http://3.37.103.25:8080/api/users/me/profile'),
+      headers: {
+        'Authorization': 'Bearer $jwt',
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        profileImage = data['profileImage'];
+        nickname = data['nickname'];
+        isLoading = false;
+        // profileImage가 asset 경로가 아니면 로컬 값 사용
+        if (profileImage == null || !(profileImage!.startsWith('assets/'))) {
+          if (localAsset != null) profileImage = localAsset;
+        }
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+        if (localAsset != null) profileImage = localAsset;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +74,7 @@ class InventoryMainScreen extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
+                
                 // 정보 카드
                 Container(
                   width: double.infinity,
@@ -39,17 +89,19 @@ class InventoryMainScreen extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(24, 60, 24, 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: const [
-                          Text('닉네임',
-                            style: TextStyle(
+                        children: [
+                          const SizedBox(height: 30),
+                          Text(
+                            nickname ?? '닉네임',
+                            style: const TextStyle(
                               fontFamily: 'Spoqa Han Sans Neo',
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                               color: Colors.black,
                             ),
                           ),
-                          SizedBox(height: 4),
-                          Text('아이디',
+                          const SizedBox(height: 4),
+                          const Text('마이 레벨 : Lv. ~~',
                             style: TextStyle(
                               fontFamily: 'Spoqa Han Sans Neo',
                               fontWeight: FontWeight.w400,
@@ -57,24 +109,7 @@ class InventoryMainScreen extends StatelessWidget {
                               color: Colors.black,
                             ),
                           ),
-                          SizedBox(height: 4),
-                          Text('마이 레벨 : Lv. ~~',
-                            style: TextStyle(
-                              fontFamily: 'Spoqa Han Sans Neo',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text('마이 랭킹 : 차트 ~~위',
-                            style: TextStyle(
-                              fontFamily: 'Spoqa Han Sans Neo',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                          ),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -82,29 +117,37 @@ class InventoryMainScreen extends StatelessWidget {
                 ),
                 // 프로필 이미지 (카드 위에 겹치게)
                 Positioned(
-                  top: 0,
+                  top: -10,
                   left: 0,
                   right: 0,
                   child: Center(
-                    child: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/profile_bg.png',
-                          fit: BoxFit.cover,
-                          width: 100,
-                          height: 100,
-                        ),
+                    child: SizedBox(
+                      width: 140,
+                      height: 140,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Always show profile_bg.png as background
+                          Image.asset('assets/images/profile_bg.png', width: 140, height: 140, fit: BoxFit.cover),
+                          // If logged in (profileImage != null and not profile_bg), show character image smaller
+                          if (profileImage != null && profileImage != 'assets/images/profile_bg.png')
+                            Positioned(
+                              top: 22, // Centered inside the bg
+                              left: 22,
+                              right: 22,
+                              bottom: 22,
+                              child: profileImage!.startsWith('assets/')
+                                ? Image.asset(profileImage!, width: 56, height: 56, fit: BoxFit.contain)
+                                : Image.network(profileImage!, width: 56, height: 56, fit: BoxFit.contain),
+                            ),
+                        ],
                       ),
                     ),
                   ),
                 ),
               ],
             ),
+            
             // 미션 목록
             Card(
               shape: RoundedRectangleBorder(

@@ -4,8 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:uni_links/uni_links.dart';
 import 'dart:async';
+import 'dart:convert';
 import '../main.dart';
 import '../../theme/colors.dart';
+import 'character_select_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   
   // TODO: Replace these with actual values from your team member
   final String _clientId = '3f53ffa96a908a795ee96ed27c164a14';
-  final String _redirectUri = 'https://278d-218-235-241-56.ngrok-free.app/callback';
+  final String _redirectUri = 'http://3.37.103.25:8080/callback';
   StreamSubscription? _linkSubscription;
 
   @override
@@ -59,16 +61,56 @@ class _LoginScreenState extends State<LoginScreen> {
     final uri = Uri.parse(link);
     if (uri.scheme == 'myplay' && uri.host == 'callback') {
       final token = uri.queryParameters['token'];
-      if (token != null) {
+      final refreshToken = uri.queryParameters['refreshToken'];
+      if (token != null && refreshToken != null) {
         print('받은 JWT 토큰: $token');
+        print('받은 Refresh 토큰: $refreshToken');
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', token);
+        await prefs.setString('refresh_token', refreshToken);
+        await _afterLoginNavigation();
+      }
+    }
+  }
+
+  Future<void> _afterLoginNavigation() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jwt = prefs.getString('jwt_token');
+    if (jwt == null) return;
+
+    final response = await http.get(
+      Uri.parse('http://3.37.103.25:8080/api/users/profile/check'),
+      headers: {
+        'Authorization': 'Bearer $jwt',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['profileCompleted'] == false) {
+        // 캐릭터 선택 화면으로 이동
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const CharacterSelectScreen()),
+          );
+        }
+      } else {
+        // 홈 화면으로 이동
         if (mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const MainScreen()),
           );
         }
+      }
+    } else {
+      // 인증 실패 등 예외 처리
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('로그인 상태 확인에 실패했습니다.')),
+        );
       }
     }
   }
@@ -133,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
           width: 348,
           height: 48,
           decoration: BoxDecoration(
-            color: const Color(0xFFFAE655),
+            color: const Color(0xFFFEE500),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -186,7 +228,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // 로고 자리 (비워둠)
-                    const SizedBox(height: 304),
+                    const SizedBox(height: 120),
+                    Image.asset(
+                      'assets/images/logo.png',
+                      width: 239,
+                    ),
+                    const SizedBox(height: 40),
                     // 아이디 입력
                     SizedBox(
                       width: 348,
@@ -200,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         decoration: const InputDecoration(
                           hintText: '아이디',
-                          hintStyle: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 14, color: Colors.grey),
+                          hintStyle: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 14, color: Color(0xFF898989)),
                           filled: true,
                           fillColor: Color.fromRGBO(255, 255, 255, 0.65),
                           border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)), borderSide: BorderSide.none),
@@ -223,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         decoration: const InputDecoration(
                           hintText: '비밀번호',
-                          hintStyle: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 14, color: Colors.grey),
+                          hintStyle: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 14, color: Color(0xFF898989)),
                           filled: true,
                           fillColor: Color.fromRGBO(255, 255, 255, 0.65),
                           border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)), borderSide: BorderSide.none),
@@ -285,6 +332,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Opacity(
               opacity: 0.7,
               child: FloatingActionButton.small(
+                heroTag: "home_button",
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
                 onPressed: () {
@@ -295,6 +343,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: const Icon(Icons.home),
                 tooltip: '개발용 홈 이동',
+              ),
+            ),
+          ),
+          // 개발용 캐릭터 선택 이동 버튼 (화면 어디서나 접근 가능)
+          Positioned(
+            left: 16,
+            bottom: 32,
+            child: Opacity(
+              opacity: 0.7,
+              child: FloatingActionButton.small(
+                heroTag: "character_button",
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CharacterSelectScreen()),
+                  );
+                },
+                child: const Icon(Icons.person),
+                tooltip: '개발용 캐릭터 선택 이동',
               ),
             ),
           ),
