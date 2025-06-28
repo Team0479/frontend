@@ -6,6 +6,9 @@ import 'package:intl/intl.dart';
 import '../square/square_main_screen.dart';
 import '../../main.dart';
 import '../../theme/colors.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CalendarMainScreen extends StatefulWidget {
   const CalendarMainScreen({super.key});
@@ -19,6 +22,36 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
   DateTime? _selectedDay;
   final Map<DateTime, List<Map<String, dynamic>>> _events = {};
   final Map<DateTime, List<Map<String, dynamic>>> _ticketEvents = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserCalendar();
+  }
+
+  Future<void> _fetchUserCalendar() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id');
+    if (userId == null) return;
+    final url = Uri.parse('http://3.37.103.25:8080/api/calendar/entries/user/$userId');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          _events.clear();
+          for (final item in data) {
+            final date = DateTime.parse(item['scheduledDate']);
+            final key = DateTime(date.year, date.month, date.day);
+            _events.putIfAbsent(key, () => []);
+            _events[key]!.add(item as Map<String, dynamic>);
+          }
+        });
+      }
+    } catch (e) {
+      // ignore error
+    }
+  }
 
   List<Map<String, dynamic>> getEventsForDay(DateTime day) {
     return _events[DateTime(day.year, day.month, day.day)] ?? [];

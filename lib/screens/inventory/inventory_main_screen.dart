@@ -18,6 +18,7 @@ class _InventoryMainScreenState extends State<InventoryMainScreen> {
   String? profileImage;
   String? nickname;
   bool isLoading = true;
+  String? jwtToken;
 
   @override
   void initState() {
@@ -29,6 +30,9 @@ class _InventoryMainScreenState extends State<InventoryMainScreen> {
     final prefs = await SharedPreferences.getInstance();
     final jwt = prefs.getString('jwt_token');
     final localAsset = prefs.getString('my_character_asset');
+    setState(() {
+      jwtToken = jwt;
+    });
     if (jwt == null) return;
     final response = await http.get(
       Uri.parse('http://3.37.103.25:8080/api/users/me/profile'),
@@ -129,8 +133,8 @@ class _InventoryMainScreenState extends State<InventoryMainScreen> {
                         children: [
                           // Always show profile_bg.png as background
                           Image.asset('assets/images/profile_bg.png', width: 140, height: 140, fit: BoxFit.cover),
-                          // If logged in (profileImage != null and not profile_bg), show character image smaller
-                          if (profileImage != null && profileImage != 'assets/images/profile_bg.png')
+                          // If logged in (jwtToken != null) and profileImage != null and not profile_bg, show character image smaller
+                          if (jwtToken != null && profileImage != null && profileImage != 'assets/images/profile_bg.png')
                             Positioned(
                               top: 22, // Centered inside the bg
                               left: 22,
