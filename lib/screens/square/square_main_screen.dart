@@ -23,6 +23,7 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
   List<Map<String, dynamic>> _reviews = [];
   bool _isLoading = true;
   String? _error;
+  Map<int, String> _posterCache = {}; // performanceId -> posterUrl
 
   @override
   void initState() {
@@ -41,6 +42,13 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
           _reviews = data.map((e) => e as Map<String, dynamic>).toList();
           _isLoading = false;
         });
+        // 리뷰별 공연 포스터 미리 받아오기
+        for (final review in _reviews) {
+          final perfId = review['performanceId'];
+          if (perfId != null && !_posterCache.containsKey(perfId)) {
+            _fetchPerformancePoster(perfId);
+          }
+        }
       } else {
         setState(() {
           _error = '조회 실패: ${response.statusCode}';
@@ -52,6 +60,24 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
         _error = '에러 발생: $e';
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _fetchPerformancePoster(int performanceId) async {
+    final url = Uri.parse('http://3.37.103.25:8080/api/calendar/performances/$performanceId');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final posterUrl = data['posterUrl'] ?? data['imageUrl'] ?? data['performanceImageUrl'];
+        if (posterUrl != null && posterUrl.toString().isNotEmpty) {
+          setState(() {
+            _posterCache[performanceId] = posterUrl;
+          });
+        }
+      }
+    } catch (e) {
+      // ignore error
     }
   }
 
@@ -81,6 +107,8 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                 itemCount: _reviews.length,
                 itemBuilder: (context, index) {
                   final review = _reviews[index];
+                  final perfId = review['performanceId'];
+                  final posterUrl = perfId != null ? _posterCache[perfId] : null;
                   return Center(
                     child: GestureDetector(
                       onTap: () {
@@ -116,8 +144,8 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                               // Left side - Image
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: review['performancePoster'] != null
-                                  ? Image.network(review['performancePoster'], width: 120, height: 70, fit: BoxFit.cover)
+                                child: (posterUrl != null && posterUrl.isNotEmpty)
+                                  ? Image.network(posterUrl, width: 120, height: 70, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Image.asset('assets/images/poster1.png', width: 120, height: 70, fit: BoxFit.cover))
                                   : Image.asset('assets/images/poster1.png', width: 120, height: 70, fit: BoxFit.cover),
                               ),
                               const SizedBox(width: 8.0),

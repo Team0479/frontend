@@ -156,18 +156,24 @@ class _ChartTabState extends State<ChartTab> {
         if (widget.tabName == '베스트 플레이어') {
           if (data is List) {
             Map<String, Map<String, dynamic>> userStats = {};
+            Map<String, int> userFirstReviewId = {};
+            
             for (var review in data) {
               String userId = review['userId']?.toString() ?? '';
               String userNickname = review['userNickname'] ?? '익명';
+              int reviewId = review['reviewId'] ?? review['id'];
+              
               if (!userStats.containsKey(userId)) {
                 userStats[userId] = {
                   'userId': userId,
                   'userNickname': userNickname,
+                  'profileImage': null, // 초기값
                   'reviewCount': 0,
                   'totalLikes': 0,
                   'totalRating': 0,
                   'ratingCount': 0,
                 };
+                userFirstReviewId[userId] = reviewId; // 첫 번째 리뷰 ID 저장
               }
               userStats[userId]!['reviewCount'] = (userStats[userId]!['reviewCount'] ?? 0) + 1;
               userStats[userId]!['totalLikes'] = (userStats[userId]!['totalLikes'] ?? 0) + (review['likeCount'] ?? 0);
@@ -182,6 +188,37 @@ class _ChartTabState extends State<ChartTab> {
               int bScore = (b['reviewCount'] ?? 0) * 10 + (b['totalLikes'] ?? 0);
               return bScore.compareTo(aScore);
             });
+            
+            // 상위 3명의 프로필 이미지 조회 (리뷰 상세 API 사용)
+            for (int i = 0; i < processedData.length && i < 3; i++) {
+              final user = processedData[i];
+              final userId = user['userId'];
+              final reviewId = userFirstReviewId[userId];
+              
+              if (userId != null && reviewId != null) {
+                try {
+                  final reviewDetailResponse = await http.get(
+                    Uri.parse('http://3.37.103.25:8080/api/reviews/$reviewId'),
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                  );
+                  if (reviewDetailResponse.statusCode == 200) {
+                    final reviewDetail = json.decode(reviewDetailResponse.body);
+                    processedData[i]['profileImage'] = reviewDetail['userProfileImage'];
+                    debugPrint('유저 $userId 리뷰 $reviewId 상세 조회 성공: ${reviewDetail['userProfileImage']}');
+                  } else {
+                    debugPrint('유저 $userId 리뷰 $reviewId 상세 조회 실패: ${reviewDetailResponse.statusCode}');
+                    // 실패 시 기본 캐릭터 이미지 사용
+                    processedData[i]['profileImage'] = 'assets/images/character_blue.png';
+                  }
+                } catch (e) {
+                  debugPrint('유저 $userId 리뷰 $reviewId 상세 조회 에러: $e');
+                  // 에러 시 기본 캐릭터 이미지 사용
+                  processedData[i]['profileImage'] = 'assets/images/character_blue.png';
+                }
+              }
+            }
           }
         } else {
           processedData = data is List ? data : [];
@@ -196,6 +233,16 @@ class _ChartTabState extends State<ChartTab> {
           _items = processedData;
           _isLoading = false;
         });
+        
+        // 베스트 플레이어 탭에서 1,2,3위 유저 정보 로그 출력
+        if (widget.tabName == '베스트 플레이어' && processedData.isNotEmpty) {
+          debugPrint('=== 베스트 플레이어 1,2,3위 유저 정보 ===');
+          for (int i = 0; i < processedData.length && i < 3; i++) {
+            final user = processedData[i];
+            debugPrint('${i + 1}위 - 닉네임: ${user['userNickname']}, 프로필이미지: ${user['profileImage']}');
+          }
+          debugPrint('=====================================');
+        }
       } else {
         setState(() {
           _error = '조회 실패: ${response.statusCode}';
@@ -675,122 +722,64 @@ class _ChartTabState extends State<ChartTab> {
                 ),
       );
     } else {
-      // 베스트 플레이어 탭
+      // 베스트 플레이어 탭 - Podium UI
       return Container(
-        color: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        width: double.infinity,
+        height: 340,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/podium3.png'),
+            fit: BoxFit.cover,
+            alignment: Alignment(0, -0.3),
+          ),
+        ),
         child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-            ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
-            : _items.isEmpty
-              ? const Center(child: Text('데이터가 없습니다.', style: TextStyle(color: Colors.grey)))
-              : ListView.separated(
-                  padding: EdgeInsets.zero,
-                  itemCount: _items.length,
-                  separatorBuilder: (context, idx) => const SizedBox(height: 16),
-                  itemBuilder: (context, idx) {
-                    final player = _items[idx];
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.lightBlue, width: 1.5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            offset: const Offset(2, 2),
-                            blurRadius: 6,
-                            spreadRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Row(
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+                : _items.isEmpty
+                    ? const Center(child: Text('데이터가 없습니다.', style: TextStyle(color: Colors.grey)))
+                    : Stack(
+                        alignment: Alignment.bottomCenter,
                         children: [
-                          // 순위 배지
-                          Container(
-                            width: 40,
-                            height: 40,
-                            margin: const EdgeInsets.only(right: 16),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image.asset(
-                                  idx < 3
-                                      ? 'assets/images/ranking_blue.png'
-                                      : 'assets/images/ranking_gray.png',
-                                  width: 40,
-                                  height: 40,
-                                ),
-                                Text(
-                                  '${idx + 1}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Spoqa Han Sans Neo',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
+                          // 2위 (왼쪽)
+                          if (_items.length > 1)
+                            Positioned(
+                              left: 40,
+                              bottom: 60,
+                              child: _PodiumUser(
+                                rank: 2,
+                                nickname: _items[1]['userNickname'] ?? '익명',
+                                profileImage: _items[1]['profileImage'],
+                                size: 90,
+                              ),
                             ),
-                          ),
-                          // 사용자 정보
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  player['userNickname'] ?? '익명',
-                                  style: const TextStyle(
-                                    fontFamily: 'Spoqa Han Sans Neo',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '리뷰 ${player['reviewCount'] ?? 0}개',
-                                      style: const TextStyle(
-                                        fontFamily: 'Spoqa Han Sans Neo',
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 12,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      '좋아요 ${player['totalLikes'] ?? 0}개',
-                                      style: const TextStyle(
-                                        fontFamily: 'Spoqa Han Sans Neo',
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 12,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                if (player['ratingCount'] != null && player['ratingCount'] > 0)
-                                  Text(
-                                    '평균 평점: ${((player['totalRating'] ?? 0) / (player['ratingCount'] ?? 1)).toStringAsFixed(1)}',
-                                    style: const TextStyle(
-                                      fontFamily: 'Spoqa Han Sans Neo',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                              ],
+                          // 1위 (가운데)
+                          if (_items.isNotEmpty)
+                            Positioned(
+                              bottom: 100,
+                              left: MediaQuery.of(context).size.width / 2 - 60,
+                              child: _PodiumUser(
+                                rank: 1,
+                                nickname: _items[0]['userNickname'] ?? '익명',
+                                profileImage: _items[0]['profileImage'],
+                                size: 120,
+                              ),
                             ),
-                          ),
+                          // 3위 (오른쪽)
+                          if (_items.length > 2)
+                            Positioned(
+                              right: 40,
+                              bottom: 80,
+                              child: _PodiumUser(
+                                rank: 3,
+                                nickname: _items[2]['userNickname'] ?? '익명',
+                                profileImage: _items[2]['profileImage'],
+                                size: 90,
+                              ),
+                            ),
                         ],
                       ),
-                    );
-                  },
-                ),
       );
     }
   }
@@ -1020,6 +1009,62 @@ class _TodayPlayCard extends StatelessWidget {
         const Text('공연 기간 : ~~~~~~~~', style: TextStyle(fontSize: 12)),
         const Text('예매율 : ~', style: TextStyle(fontSize: 12)),
         const Text('공연 설명 : ~~~~~~~~', style: TextStyle(fontSize: 12)),
+      ],
+    );
+  }
+}
+
+// PodiumUser 위젯 추가
+class _PodiumUser extends StatelessWidget {
+  final int rank;
+  final String nickname;
+  final String? profileImage;
+  final double size;
+  const _PodiumUser({required this.rank, required this.nickname, this.profileImage, this.size = 100});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: size,
+          height: size,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: profileImage != null && profileImage!.isNotEmpty
+              ? (profileImage!.startsWith('assets/')
+                  ? Image.asset(profileImage!, fit: BoxFit.contain)
+                  : Image.network(profileImage!, fit: BoxFit.contain, errorBuilder: (c, e, s) => Image.asset('assets/images/character_blue.png', fit: BoxFit.contain)))
+              : Image.asset('assets/images/character_blue.png', fit: BoxFit.contain),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.85),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            nickname,
+            style: const TextStyle(
+              fontFamily: 'Spoqa Han Sans Neo',
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: Colors.black,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }

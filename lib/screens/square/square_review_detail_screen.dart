@@ -3,6 +3,7 @@ import '../../theme/colors.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
 
 class SquareReviewDetailScreen extends StatefulWidget {
   final Map<String, dynamic> review;
@@ -290,15 +291,8 @@ class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
                           ),
                         ),
                         
-                        // Review content
-                        Container(
-                          width: double.infinity,
-                          height: 200.0,
-                          color: Colors.grey[300],
-                          child: const Center(
-                            child: Text('리뷰 이미지 영역', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Colors.black)),
-                          ),
-                        ),
+                        // Review content (이미지 영역 완전히 제거)
+                        const SizedBox(height: 16),
                         
                         // Performance title, Review title & content
                         Padding(
