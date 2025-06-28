@@ -38,13 +38,42 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
       setState(() { _isSubmitting = false; });
       return;
     }
-    final url = Uri.parse('http://3.37.103.25:8080/api/reviews');
+    // userId 얻기
+    int? userId;
+    try {
+      final profileResponse = await http.get(
+        Uri.parse('http://3.37.103.25:8080/api/users/me/profile'),
+        headers: {
+          'Authorization': 'Bearer $jwt',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (profileResponse.statusCode == 200) {
+        final profileData = json.decode(profileResponse.body);
+        userId = profileData['userId'] ?? profileData['id'];
+      }
+    } catch (e) {
+      print('프로필 조회 에러: $e');
+    }
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('사용자 정보를 불러올 수 없습니다.', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
+      );
+      setState(() { _isSubmitting = false; });
+      return;
+    }
+    final url = Uri.parse('http://3.37.103.25:8080/api/reviews/create');
     final body = jsonEncode({
+      'userId': userId,
       'performanceId': 1, // TODO: 실제 공연 ID로 대체
       'rating': _rating,
+      'title': _reviewTitleController.text,
       'content': _reviewContentController.text,
-      'viewDate': _viewDate.toIso8601String().split('T')[0],
+      'viewingDate': _viewDate.toIso8601String().split('T')[0],
     });
+    print('리뷰 등록 시도');
+    print('요청 URL: $url');
+    print('요청 body: $body');
     try {
       final response = await http.post(
         url,
@@ -54,7 +83,9 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
         },
         body: body,
       );
-      if (response.statusCode == 201) {
+      print('응답 코드: ${response.statusCode}');
+      print('응답 body: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('리뷰가 등록되었습니다.', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
         );
@@ -65,6 +96,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
         );
       }
     } catch (e) {
+      print('에러 발생: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('에러 발생: $e', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
       );

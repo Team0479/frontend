@@ -82,77 +82,87 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                 itemBuilder: (context, index) {
                   final review = _reviews[index];
                   return Center(
-                    child: Container(
-                      width: 354,
-                      height: 145,
-                      margin: const EdgeInsets.only(bottom: 16.0),
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Color(0xFFE5EEFA), width: 1.5),
-                        borderRadius: BorderRadius.circular(12.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 6,
-                            offset: const Offset(2, 2),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SquareReviewDetailScreen(review: review),
                           ),
-                        ],
-                      ),
-                      child: SizedBox(
+                        );
+                      },
+                      child: Container(
+                        width: 354,
                         height: 145,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Left side - Image
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: review['performancePoster'] != null
-                                ? Image.network(review['performancePoster'], width: 120, height: 70, fit: BoxFit.cover)
-                                : Image.asset('assets/images/poster1.png', width: 120, height: 70, fit: BoxFit.cover),
+                        margin: const EdgeInsets.only(bottom: 16.0),
+                        padding: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Color(0xFFE5EEFA), width: 1.5),
+                          borderRadius: BorderRadius.circular(12.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 6,
+                              offset: const Offset(2, 2),
                             ),
-                            const SizedBox(width: 8.0),
-                            // Right side - Text content
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    review['performanceTitle'] ?? '제목 없음',
-                                    style: const TextStyle(
-                                      fontFamily: 'Spoqa Han Sans Neo',
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2.0),
-                                  Text(
-                                    review['userNickname'] ?? '',
-                                    style: const TextStyle(
-                                      fontFamily: 'Spoqa Han Sans Neo',
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2.0),
-                                  Expanded(
-                                    child: Text(
-                                      review['content'] ?? '',
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
+                          ],
+                        ),
+                        child: SizedBox(
+                          height: 145,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Left side - Image
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: review['performancePoster'] != null
+                                  ? Image.network(review['performancePoster'], width: 120, height: 70, fit: BoxFit.cover)
+                                  : Image.asset('assets/images/poster1.png', width: 120, height: 70, fit: BoxFit.cover),
+                              ),
+                              const SizedBox(width: 8.0),
+                              // Right side - Text content
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      review['performanceTitle'] ?? '제목 없음',
                                       style: const TextStyle(
                                         fontFamily: 'Spoqa Han Sans Neo',
-                                        fontSize: 12.0,
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.bold,
                                         color: Colors.black,
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 2.0),
+                                    Text(
+                                      review['userNickname'] ?? '',
+                                      style: const TextStyle(
+                                        fontFamily: 'Spoqa Han Sans Neo',
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2.0),
+                                    Expanded(
+                                      child: Text(
+                                        review['content'] ?? '',
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontFamily: 'Spoqa Han Sans Neo',
+                                          fontSize: 12.0,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

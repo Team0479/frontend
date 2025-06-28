@@ -17,6 +17,7 @@ class InventoryMainScreen extends StatefulWidget {
 class _InventoryMainScreenState extends State<InventoryMainScreen> {
   String? profileImage;
   String? nickname;
+  int? level;
   bool isLoading = true;
   String? jwtToken;
 
@@ -46,6 +47,7 @@ class _InventoryMainScreenState extends State<InventoryMainScreen> {
       setState(() {
         profileImage = data['profileImage'];
         nickname = data['nickname'];
+        level = data['level'];
         isLoading = false;
         // profileImage가 asset 경로가 아니면 로컬 값 사용
         if (profileImage == null || !(profileImage!.startsWith('assets/'))) {
@@ -105,8 +107,8 @@ class _InventoryMainScreenState extends State<InventoryMainScreen> {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text('마이 레벨 : Lv. ~~',
-                            style: TextStyle(
+                          Text('마이 레벨 : Lv. ${level ?? "??"}',
+                            style: const TextStyle(
                               fontFamily: 'Spoqa Han Sans Neo',
                               fontWeight: FontWeight.w400,
                               fontSize: 14,

@@ -18,9 +18,51 @@ class _InventoryTitleScreenState extends State<InventoryTitleScreen> {
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _badgeIdController = TextEditingController();
 
+  // 칭호와 미션 매핑 (badgeId는 실제 서버의 badgeId와 맞춰야 함)
+  final List<Map<String, dynamic>> _titles = [
+    {
+      'badgeId': 1,
+      'color': 'assets/images/title1.png',
+      'gray': 'assets/images/title1_gray.png',
+      'label': '레전더리 플레이어',
+    },
+    {
+      'badgeId': 2,
+      'color': 'assets/images/title2.png',
+      'gray': 'assets/images/title2_gray.png',
+      'label': '문화생활 아티스트',
+      'missionMatch': '캘린더에 일정 등록',
+    },
+    {
+      'badgeId': 3,
+      'color': 'assets/images/title3.png',
+      'gray': 'assets/images/title3_gray.png',
+      'label': '좋아요 5개 누르기',
+      'missionMatch': '좋아요 5개 누르기',
+    },
+    {
+      'badgeId': 4,
+      'color': 'assets/images/title4.png',
+      'gray': 'assets/images/title4_gray.png',
+      'label': '광장에서 리뷰 쓰기',
+      'missionMatch': '리뷰 3개 작성',
+    },
+    {
+      'badgeId': 5,
+      'color': 'assets/images/title5.png',
+      'gray': 'assets/images/title5_gray.png',
+      'label': '댓글 5개 작성',
+      'missionMatch': '댓글 5개 작성',
+    },
+  ];
+
+  List<Map<String, dynamic>> _missions = [];
+  List<int> _acquiredBadgeIds = [];
+
   @override
   void initState() {
     super.initState();
+    _fetchMissions();
     _fetchBadges();
   }
 
@@ -35,24 +77,35 @@ class _InventoryTitleScreenState extends State<InventoryTitleScreen> {
       });
       return;
     }
-    final url = Uri.parse('http://3.37.103.25:8080/api/badges/me/acquired');
+    final url = Uri.parse('http://3.37.103.25:8080/api/badges/me');
     try {
       final response = await http.get(url, headers: {
         'Authorization': 'Bearer $jwt',
         'Content-Type': 'application/json',
       });
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        setState(() {
-          _badges = data.map((e) => e as Map<String, dynamic>).toList();
-          _isLoading = false;
-        });
+      final decoded = json.decode(response.body);
+      print('받아온 칭호 목록:');
+      if (decoded is List) {
+        for (final badge in decoded) {
+          print('badgeId: \\${badge['badgeId']}, name: \\${badge['name']}, isAcquired: \\${badge['isAcquired']}');
+        }
+      } else if (decoded is Map && decoded['badges'] is List) {
+        for (final badge in decoded['badges']) {
+          print('badgeId: \\${badge['badgeId']}, name: \\${badge['name']}, isAcquired: \\${badge['isAcquired']}');
+        }
       } else {
-        setState(() {
-          _error = '조회 실패: ${response.statusCode}';
-          _isLoading = false;
-        });
+        print('칭호 응답 형식이 예상과 다릅니다: $decoded');
       }
+      List<Map<String, dynamic>> badges = [];
+      if (decoded is List) {
+        badges = decoded.map((e) => e as Map<String, dynamic>).toList();
+      } else if (decoded is Map && decoded['badges'] is List) {
+        badges = (decoded['badges'] as List).map((e) => e as Map<String, dynamic>).toList();
+      }
+      setState(() {
+        _acquiredBadgeIds = badges.where((b) => b['isAcquired'] == true).map((b) => b['badgeId'] as int).toList();
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
         _error = '에러 발생: $e';
@@ -61,37 +114,33 @@ class _InventoryTitleScreenState extends State<InventoryTitleScreen> {
     }
   }
 
-  Future<void> awardBadge() async {
-    final userId = int.tryParse(_userIdController.text.trim());
-    final badgeId = int.tryParse(_badgeIdController.text.trim());
-    if (userId == null || badgeId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('userId와 badgeId를 올바르게 입력하세요.')),
-      );
-      return;
-    }
-    final url = Uri.parse('http://3.37.103.25:8080/api/badges/award');
-    final body = jsonEncode({'userId': userId, 'badgeId': badgeId});
+  Future<void> _fetchMissions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jwt = prefs.getString('jwt_token');
+    if (jwt == null) return;
+    final url = Uri.parse('http://3.37.103.25:8080/api/missions/me');
     try {
-      final response = await http.post(url,
-        headers: {'Content-Type': 'application/json'},
-        body: body,
-      );
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? '칭호 부여 성공')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('칭호 부여 실패: \\${response.statusCode}')),
-        );
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $jwt',
+        'Content-Type': 'application/json',
+      });
+      final decoded = json.decode(response.body);
+      List<Map<String, dynamic>> missions = [];
+      if (decoded is List) {
+        missions = decoded.map((e) => e as Map<String, dynamic>).toList();
+      } else if (decoded is Map && decoded['missions'] is List) {
+        missions = (decoded['missions'] as List).map((e) => e as Map<String, dynamic>).toList();
       }
+      setState(() {
+        _missions = missions;
+      });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('에러 발생: $e')),
-      );
+      // ignore
     }
+  }
+
+  bool _isBadgeAcquired(int badgeId) {
+    return _acquiredBadgeIds.contains(badgeId);
   }
 
   @override
@@ -117,69 +166,19 @@ class _InventoryTitleScreenState extends State<InventoryTitleScreen> {
           SafeArea(
             child: Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 80,
-                          child: TextField(
-                            controller: _userIdController,
-                            decoration: const InputDecoration(hintText: 'userId'),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        SizedBox(
-                          width: 80,
-                          child: TextField(
-                            controller: _badgeIdController,
-                            decoration: const InputDecoration(hintText: 'badgeId'),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          onPressed: awardBadge,
-                          child: const Text('칭호 부여'),
-                        ),
-                      ],
+                  for (int i = 0; i < _titles.length; i++) ...[
+                    Image.asset(
+                      _isBadgeAcquired(_titles[i]['badgeId'])
+                        ? _titles[i]['color']
+                        : _titles[i]['gray'],
+                      width: 280,
+                      fit: BoxFit.contain,
                     ),
-                  ),
-                  Expanded(
-                    child: _isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _error != null
-                        ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
-                        : _badges.isEmpty
-                          ? const Center(child: Text('획득한 칭호가 없습니다.', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Colors.grey)))
-                          : SingleChildScrollView(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const SizedBox(height: 32),
-                                  for (final badge in _badges)
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 24.0),
-                                      child: Column(
-                                        children: [
-                                          if (badge['badgeImage'] != null)
-                                            Image.network(badge['badgeImage'], width: 120, height: 120, fit: BoxFit.contain),
-                                          const SizedBox(height: 8),
-                                          Text(badge['badgeName'] ?? '', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.bold, fontSize: 18)),
-                                          const SizedBox(height: 4),
-                                          Text(badge['badgeDescription'] ?? '', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 14)),
-                                          if (badge['acquiredAt'] != null)
-                                            Text('획득일: ${badge['acquiredAt'].toString().substring(0, 10)}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 12, color: Colors.grey)),
-                                        ],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                  ),
+                    if (i != _titles.length - 1)
+                      const SizedBox(height: 8),
+                  ],
                 ],
               ),
             ),

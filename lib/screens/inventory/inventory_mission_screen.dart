@@ -22,6 +22,15 @@ class _InventoryMissionScreenState extends State<InventoryMissionScreen> {
     _fetchMissions();
   }
 
+  // 미션설명에서 목표 개수 파싱
+  int extractTargetCount(String description) {
+    final match = RegExp(r'(\d+)개').firstMatch(description ?? '');
+    if (match != null) {
+      return int.parse(match.group(1)!);
+    }
+    return 0;
+  }
+
   Future<void> _fetchMissions() async {
     setState(() { _isLoading = true; _error = null; });
     final prefs = await SharedPreferences.getInstance();
@@ -41,27 +50,38 @@ class _InventoryMissionScreenState extends State<InventoryMissionScreen> {
       });
       print('미션 응답: \n${response.body}');
       final decoded = json.decode(response.body);
+      List<Map<String, dynamic>> missions = [];
       if (decoded is List) {
-        setState(() {
-          _missions = decoded.map((e) => e as Map<String, dynamic>).toList();
-          _isLoading = false;
-        });
+        missions = decoded.map((e) => e as Map<String, dynamic>).toList();
       } else if (decoded is Map && decoded['missions'] is List) {
-        setState(() {
-          _missions = (decoded['missions'] as List).map((e) => e as Map<String, dynamic>).toList();
-          _isLoading = false;
-        });
+        missions = (decoded['missions'] as List).map((e) => e as Map<String, dynamic>).toList();
       } else if (decoded is Map) {
         setState(() {
           _error = decoded['message'] ?? '알 수 없는 에러';
           _isLoading = false;
         });
+        return;
       } else {
         setState(() {
           _error = '알 수 없는 응답 형식';
           _isLoading = false;
         });
+        return;
       }
+      // 목표 개수 파싱 및 진행률 처리
+      final parsedMissions = missions.map((mission) {
+        final goal = mission['goal'] ?? extractTargetCount(mission['missionDescription']);
+        final progress = mission['progress'] ?? 0;
+        return {
+          ...mission,
+          'goal': goal,
+          'progress': progress,
+        };
+      }).toList();
+      setState(() {
+        _missions = parsedMissions;
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
         _error = '에러 발생: $e';
@@ -97,7 +117,7 @@ class _InventoryMissionScreenState extends State<InventoryMissionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    mission['missionTitle'] ?? '',
+                    mission['missionName'] ?? '',
                     style: const TextStyle(
                       fontFamily: 'Spoqa Han Sans Neo',
                       fontWeight: FontWeight.w500,
@@ -118,7 +138,7 @@ class _InventoryMissionScreenState extends State<InventoryMissionScreen> {
               ),
             ),
             Text(
-              '${mission['currentProgress'] ?? 0} / ${mission['targetCount'] ?? 0}',
+              '${mission['progress']} / ${mission['goal']}',
               style: const TextStyle(
                 fontFamily: 'Spoqa Han Sans Neo',
                 fontWeight: FontWeight.w500,

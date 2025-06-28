@@ -58,7 +58,7 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
     setState(() {
       _isSearching = true;
     });
-    final url = Uri.parse('http://3.37.103.25:8080/api/performances/search?keyword=$keyword');
+    final url = Uri.parse('http://3.37.103.25:8080/api/calendar/performances/search?title=$keyword');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -331,14 +331,63 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
       );
       return;
     }
+
+    // userId를 얻기 위해 프로필 API 호출
+    int? userId;
+    try {
+      final profileResponse = await http.get(
+        Uri.parse('http://3.37.103.25:8080/api/users/me/profile'),
+        headers: {
+          'Authorization': 'Bearer $jwt',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (profileResponse.statusCode == 200) {
+        final profileData = json.decode(profileResponse.body);
+        userId = profileData['userId'] ?? profileData['id'];
+      }
+    } catch (e) {
+      // 무시하고 진행 (userId 없으면 등록 불가)
+    }
+    if (userId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('사용자 정보를 불러올 수 없습니다.', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
+      );
+      return;
+    }
+
+    // watchedAt 생성 (공연 일시)
+    DateTime watchedAtDateTime = DateTime(
+      _selectedDate!.year,
+      _selectedDate!.month,
+      _selectedDate!.day,
+      _selectedTime?.hour ?? 0,
+      _selectedTime?.minute ?? 0,
+    );
+    final watchedAtStr = watchedAtDateTime.toIso8601String();
+
+    // 디버깅 로그
+    print('=== 등록 시도 디버깅 정보 ===');
+    print('userId: $userId');
+    print('selectedPerformanceId: $_selectedPerformanceId');
+    print('selectedDate: $_selectedDate');
+    print('selectedTime: $_selectedTime');
+    print('watchedAt: $watchedAtStr');
+    print('memoController.text: ${_memoController.text}');
+    print('jwt token: ${jwt.substring(0, 20)}...');
+
     final url = Uri.parse('http://3.37.103.25:8080/api/calendar/entries');
     final body = jsonEncode({
+      'userId': userId,
       'performanceId': _selectedPerformanceId ?? 0,
-      'scheduledDate': DateFormat('yyyy-MM-dd').format(_selectedDate!),
-      'title': _titleController.text,
-      'venue': _placeController.text,
+      'viewingDate': DateFormat('yyyy-MM-dd').format(_selectedDate!),
+      'memo': _memoController.text,
+      'watchedAt': watchedAtStr,
     });
     print('보내는 데이터: $body');
+    print('요청 URL: $url');
+    print('요청 헤더: Authorization: Bearer ${jwt.substring(0, 20)}..., Content-Type: application/json');
+
     try {
       final response = await http.post(
         url,
@@ -348,17 +397,28 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
         },
         body: body,
       );
+
+      print('응답 상태 코드: ${response.statusCode}');
+      print('응답 헤더: ${response.headers}');
+      print('응답 바디: ${response.body}');
+
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('일정이 등록되었습니다.', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
         );
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
       } else {
+        print('=== 등록 실패 상세 정보 ===');
+        print('HTTP 상태 코드: ${response.statusCode}');
+        print('응답 내용: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('등록 실패: ${response.statusCode}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
+          SnackBar(content: Text('등록 실패: ${response.statusCode} - ${response.body}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
         );
       }
     } catch (e) {
+      print('=== 네트워크 에러 ===');
+      print('에러 타입: ${e.runtimeType}');
+      print('에러 메시지: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('에러 발생: $e', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
       );
