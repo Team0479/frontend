@@ -350,12 +350,12 @@ class _ChartTabState extends State<ChartTab> {
                           crossAxisCount: 2,
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 18,
-                          childAspectRatio: 0.45,
+                          childAspectRatio: 0.55,
                         ),
                         itemBuilder: (context, idx) {
                           final perf = _items[idx];
                           return Column(
-                            mainAxisSize: MainAxisSize.max,
+                            mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Stack(
@@ -402,49 +402,44 @@ class _ChartTabState extends State<ChartTab> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    '공연 제목 : ${perf['title'] ?? ''}',
+                                    perf['title'] ?? '',
                                     style: const TextStyle(
                                       fontFamily: 'Spoqa Han Sans Neo',
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.w700,
                                       fontSize: 14,
                                       color: Colors.black,
                                     ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    '공연 장소 : ${perf['venue'] ?? ''}',
+                                    perf['venue'] ?? '',
                                     style: const TextStyle(
                                       fontFamily: 'Spoqa Han Sans Neo',
                                       fontWeight: FontWeight.w500,
                                       fontSize: 13,
                                       color: Colors.black87,
                                     ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
-                                    '공연 기간 : ${perf['startDate'] ?? ''} ~ ${perf['endDate'] ?? ''}',
+                                    '${perf['startDate'] ?? ''} ~ ${perf['endDate'] ?? ''}',
                                     style: const TextStyle(
                                       fontFamily: 'Spoqa Han Sans Neo',
                                       fontWeight: FontWeight.w500,
                                       fontSize: 13,
                                       color: Colors.black87,
                                     ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  if (perf['popularity'] != null)
-                                    Text(
-                                      '인기도 : ${perf['popularity']}',
-                                      style: const TextStyle(
-                                        fontFamily: 'Spoqa Han Sans Neo',
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
                                 ],
                               ),
                             ],
@@ -655,9 +650,9 @@ class _ChartTabState extends State<ChartTab> {
                         itemCount: _items.length,
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          mainAxisSpacing: 18,
+                          mainAxisSpacing: 12,
                           crossAxisSpacing: 18,
-                          childAspectRatio: 0.48,
+                          childAspectRatio: 0.55,
                         ),
                         itemBuilder: (context, idx) {
                           final perf = _items[idx];
@@ -666,6 +661,7 @@ class _ChartTabState extends State<ChartTab> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
                                 child: AspectRatio(
                                   aspectRatio: 0.7,
                                   child: (() {
@@ -684,34 +680,45 @@ class _ChartTabState extends State<ChartTab> {
                                   })(),
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '공연 제목 : ${perf['title'] ?? ''}',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '공연 장소 : ${perf['venue'] ?? ''}',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              Text(
-                                '카테고리 : ${perf['category'] ?? ''}',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 13,
-                                  color: Colors.black87,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    perf['title'] ?? '',
+                                    style: const TextStyle(
+                                      fontFamily: 'Spoqa Han Sans Neo',
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    perf['venue'] ?? '',
+                                    style: const TextStyle(
+                                      fontFamily: 'Spoqa Han Sans Neo',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                      color: Colors.black87,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    '${perf['startDate'] ?? ''} ~ ${perf['endDate'] ?? ''}',
+                                    style: const TextStyle(
+                                      fontFamily: 'Spoqa Han Sans Neo',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 13,
+                                      color: Colors.black87,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                               ),
                             ],
                           );
@@ -745,37 +752,40 @@ class _ChartTabState extends State<ChartTab> {
                           // 2위 (왼쪽)
                           if (_items.length > 1)
                             Positioned(
-                              left: 40,
-                              bottom: 60,
+                              left: 88,
+                              bottom: 114,
                               child: _PodiumUser(
                                 rank: 2,
                                 nickname: _items[1]['userNickname'] ?? '익명',
                                 profileImage: _items[1]['profileImage'],
-                                size: 90,
+                                size: 45,
+                                spacing: 16,
                               ),
                             ),
                           // 1위 (가운데)
                           if (_items.isNotEmpty)
                             Positioned(
-                              bottom: 100,
-                              left: MediaQuery.of(context).size.width / 2 - 60,
+                              bottom: 193,
+                              left: MediaQuery.of(context).size.width / 2 - 29,
                               child: _PodiumUser(
                                 rank: 1,
                                 nickname: _items[0]['userNickname'] ?? '익명',
                                 profileImage: _items[0]['profileImage'],
-                                size: 120,
+                                size: 61,
+                                spacing: 22,
                               ),
                             ),
                           // 3위 (오른쪽)
                           if (_items.length > 2)
                             Positioned(
-                              right: 40,
-                              bottom: 80,
+                              right: 83,
+                              bottom: 90,
                               child: _PodiumUser(
                                 rank: 3,
                                 nickname: _items[2]['userNickname'] ?? '익명',
                                 profileImage: _items[2]['profileImage'],
-                                size: 90,
+                                size: 45,
+                                spacing: 8,
                               ),
                             ),
                         ],
@@ -1020,50 +1030,39 @@ class _PodiumUser extends StatelessWidget {
   final String nickname;
   final String? profileImage;
   final double size;
-  const _PodiumUser({required this.rank, required this.nickname, this.profileImage, this.size = 100});
+  final double spacing;
+  const _PodiumUser({
+    required this.rank, 
+    required this.nickname, 
+    this.profileImage, 
+    this.size = 100,
+    this.spacing = 8,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: size,
           height: size,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 8,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
           child: profileImage != null && profileImage!.isNotEmpty
               ? (profileImage!.startsWith('assets/')
                   ? Image.asset(profileImage!, fit: BoxFit.contain)
                   : Image.network(profileImage!, fit: BoxFit.contain, errorBuilder: (c, e, s) => Image.asset('assets/images/character_blue.png', fit: BoxFit.contain)))
               : Image.asset('assets/images/character_blue.png', fit: BoxFit.contain),
         ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
-            borderRadius: BorderRadius.circular(8),
+        SizedBox(height: spacing),
+        Text(
+          nickname,
+          style: const TextStyle(
+            fontFamily: 'Galmuri14',
+            fontWeight: FontWeight.bold,
+            fontSize: 10,
+            color: Colors.black,
           ),
-          child: Text(
-            nickname,
-            style: const TextStyle(
-              fontFamily: 'Spoqa Han Sans Neo',
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-              color: Colors.black,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
