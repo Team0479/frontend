@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../../theme/colors.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -21,9 +22,12 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
   bool _showDropdown = false;
   bool _isSearching = false;
   int _rating = 5;
-  DateTime _viewDate = DateTime.now();
+  DateTime? _viewDate;
   bool _isSubmitting = false;
   int? _selectedPerformanceId;
+  DateTime? _performanceStartDate;
+  DateTime? _performanceEndDate;
+  List<DateTime> _dateCandidates = [];
 
   @override
   void dispose() {
@@ -79,7 +83,67 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
       _performanceNameController.text = performance['title'] ?? '';
       _selectedPerformanceId = performance['id'] ?? performance['performanceId'];
       _showDropdown = false;
+      // 공연 시작/종료일 저장 및 날짜 후보 생성
+      if (performance['startDate'] != null && performance['endDate'] != null) {
+        _performanceStartDate = DateTime.tryParse(performance['startDate']);
+        _performanceEndDate = DateTime.tryParse(performance['endDate']);
+        if (_performanceStartDate != null && _performanceEndDate != null) {
+          final days = _performanceEndDate!.difference(_performanceStartDate!).inDays;
+          _dateCandidates = List.generate(days + 1, (i) => _performanceStartDate!.add(Duration(days: i)));
+        } else {
+          _dateCandidates = [];
+        }
+      } else {
+        _performanceStartDate = null;
+        _performanceEndDate = null;
+        _dateCandidates = [];
+      }
+      // 관람일은 자동으로 채우지 않고, 직접 선택하게 둔다.
+      _viewDate = null;
     });
+  }
+
+  Future<void> _pickViewDate() async {
+    if (_dateCandidates.isEmpty) {
+      // 기본값: 오늘~10일
+      final today = DateTime.now();
+      _dateCandidates = List.generate(10, (i) => DateTime(today.year, today.month, today.day + i));
+    }
+    int initialIndex = _dateCandidates.indexWhere((d) => d.year == _viewDate?.year && d.month == _viewDate?.month && d.day == _viewDate?.day);
+    if (initialIndex < 0) initialIndex = 0;
+    DateTime tempSelected = _dateCandidates[initialIndex];
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: 250,
+          color: AppColors.lightBlue,
+          child: Column(
+            children: [
+              Expanded(
+                child: CupertinoPicker(
+                  scrollController: FixedExtentScrollController(initialItem: initialIndex),
+                  itemExtent: 40,
+                  onSelectedItemChanged: (idx) {
+                    tempSelected = _dateCandidates[idx];
+                  },
+                  children: _dateCandidates.map((d) => Center(child: Text('${d.year}년 ${d.month}월 ${d.day}일', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')))).toList(),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _viewDate = tempSelected;
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text('선택', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Colors.black)),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _submitReview() async {
@@ -125,7 +189,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
       'rating': _rating,
       'title': _reviewTitleController.text,
       'content': _reviewContentController.text,
-      'viewingDate': _viewDate.toIso8601String().split('T')[0],
+      'viewingDate': _viewDate?.toIso8601String().split('T')[0],
     });
     print('리뷰 등록 시도 (이미지 없이)');
     print('요청 URL: $url');
@@ -145,7 +209,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('리뷰가 등록되었습니다.', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
         );
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('등록 실패: ${response.statusCode}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
@@ -190,7 +254,6 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              // 공연명 검색창 + 검색 버튼 + 드롭다운
               Row(
                 children: [
                   Expanded(
@@ -298,43 +361,60 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     },
                   ),
                 ),
+              const SizedBox(height: 16),
+              // 관람일
+              const Text('관람일',
+                style: TextStyle(
+                  fontFamily: 'Spoqa Han Sans Neo',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 17,
+                  color: Colors.black,
+                ),
+              ),
               const SizedBox(height: 8),
-              // 공연명 입력창(수동 입력 가능)
               SizedBox(
                 width: 348,
                 height: 48,
-                child: TextField(
-                  controller: _performanceNameController,
-                  readOnly: false,
-                  decoration: InputDecoration(
-                    hintText: '공연명을 입력하세요',
-                    hintStyle: const TextStyle(
-                      fontFamily: 'Spoqa Han Sans Neo',
-                      color: Color(0xFF9D9D9D),
+                child: GestureDetector(
+                  onTap: _pickViewDate,
+                  child: AbsorbPointer(
+                    child: TextField(
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        hintText: '관람일을 선택하세요',
+                        hintStyle: const TextStyle(
+                          fontFamily: 'Spoqa Han Sans Neo',
+                          color: Color(0xFF9D9D9D),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
+                        ),
+                      ),
+                      controller: TextEditingController(
+                        text: _viewDate != null ? '${_viewDate!.year}년 ${_viewDate!.month.toString().padLeft(2,'0')}월 ${_viewDate!.day.toString().padLeft(2,'0')}일' : '',
+                      ),
+                      style: const TextStyle(
+                        fontFamily: 'Spoqa Han Sans Neo',
+                        color: Colors.black,
+                      ),
                     ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
-                    ),
-                  ),
-                  style: const TextStyle(
-                    fontFamily: 'Spoqa Han Sans Neo',
-                    color: Colors.black,
                   ),
                 ),
               ),
               const SizedBox(height: 16),
+              // 리뷰 작성
               const Text('리뷰 작성',
                 style: TextStyle(
                   fontFamily: 'Spoqa Han Sans Neo',
@@ -383,7 +463,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 height: 300,
                 child: TextField(
                   controller: _reviewContentController,
-                  maxLines: 10,
+                  maxLines: 15,
                   decoration: InputDecoration(
                     hintText: '리뷰 내용을 입력하세요',
                     hintStyle: const TextStyle(
@@ -413,40 +493,48 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              // 평점
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text('평점', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 17, color: Colors.black)),
-                  const SizedBox(width: 12),
-                  DropdownButton<int>(
-                    value: _rating,
-                    items: List.generate(5, (i) => DropdownMenuItem(value: i+1, child: Text('${i+1}점'))),
-                    onChanged: (val) { if (val != null) setState(() { _rating = val; }); },
+                  SizedBox(
+                    height: 48,
+                    child: Row(
+                      children: [
+                        const Text('평점', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 17, color: Colors.black)),
+                        const SizedBox(width: 12),
+                        Container(
+                          height: 48,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppColors.lightBlue, width: 1.2),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<int>(
+                              value: _rating,
+                              icon: const Icon(Icons.expand_more, color: Colors.black),
+                              dropdownColor: Colors.white,
+                              style: const TextStyle(
+                                fontFamily: 'Spoqa Han Sans Neo',
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                              items: List.generate(5, (i) => DropdownMenuItem(
+                                value: i+1,
+                                child: Text('${i+1}점', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w600, fontSize: 15, color: Colors.black)),
+                              )),
+                              onChanged: (val) { if (val != null) setState(() { _rating = val; }); },
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Text('관람일', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 17, color: Colors.black)),
-                  const SizedBox(width: 12),
-                  TextButton(
-                    onPressed: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: _viewDate,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2100),
-                      );
-                      if (picked != null) setState(() { _viewDate = picked; });
-                    },
-                    child: Text('${_viewDate.year}-${_viewDate.month.toString().padLeft(2,'0')}-${_viewDate.day.toString().padLeft(2,'0')}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
                   SizedBox(
                     width: 126,
                     height: 44,
@@ -474,6 +562,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),

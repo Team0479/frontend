@@ -4,6 +4,7 @@ import '../../theme/colors.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../home_screen.dart'; // ReviewCard 위젯을 사용하기 위해 import
 
 class MyReviewScreen extends StatefulWidget {
   const MyReviewScreen({super.key});
@@ -98,6 +99,11 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
           _reviews = data.map((e) => e as Map<String, dynamic>).toList();
+          _reviews.sort((a, b) {
+            final aDate = DateTime.tryParse(a['createdAt'] ?? '') ?? DateTime(1970);
+            final bDate = DateTime.tryParse(b['createdAt'] ?? '') ?? DateTime(1970);
+            return bDate.compareTo(aDate); // 최신순
+          });
           _isLoading = false;
         });
       } else {
@@ -130,70 +136,88 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
       ),
       body: Column(
         children: [
-          // 통계 카드
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: _isStatsLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _statsError != null
-                ? Text(_statsError!, style: const TextStyle(color: Colors.red))
-                : _statistics == null
-                  ? const SizedBox.shrink()
-                  : Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('총 리뷰 수: ${_statistics!['totalReviews']}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text('평균 평점: ${_statistics!['averageRating']}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')),
-                            const SizedBox(height: 8),
-                            const Text('평점 분포:', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo')),
-                            Row(
-                              children: List.generate(5, (i) {
-                                final rating = (i+1).toString();
-                                final count = _statistics!['ratingDistribution']?[rating] ?? 0;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 12.0),
-                                  child: Text('$rating점: $count', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')),
-                                );
-                              }),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('평점별 보기:', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 15)),
-                const SizedBox(width: 12),
-                DropdownButton<int?>(
-                  value: _selectedRating,
-                  items: [
-                    const DropdownMenuItem(value: null, child: Text('전체')),
-                    ...List.generate(5, (i) => DropdownMenuItem(value: i+1, child: Text('${i+1}점'))),
+                Row(
+                  children: [
+                    const Text('평점', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 15, color: Colors.black)),
+                    const SizedBox(width: 8),
+                    Container(
+                      height: 48,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.lightBlue, width: 1.2),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<int?>(
+                          value: _selectedRating,
+                          icon: const Icon(Icons.expand_more, color: Colors.black),
+                          dropdownColor: Colors.white,
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                          items: [
+                            const DropdownMenuItem(value: null, child: Text('전체', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
+                            ...List.generate(5, (i) => DropdownMenuItem(value: i+1, child: Text('${i+1}점', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo')))),
+                          ],
+                          onChanged: (val) {
+                            setState(() { _selectedRating = val; _selectedCategory = null; });
+                            _fetchMyReviews();
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
                   ],
-                  onChanged: (val) {
-                    setState(() { _selectedRating = val; _selectedCategory = null; });
-                    _fetchMyReviews();
-                  },
                 ),
                 const SizedBox(width: 24),
-                const Text('카테고리:', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 15)),
-                const SizedBox(width: 12),
-                DropdownButton<String?>(
-                  value: _selectedCategory ?? '전체',
-                  items: _categories.map((cat) => DropdownMenuItem(value: cat, child: Text(cat))).toList(),
-                  onChanged: (val) {
-                    setState(() { _selectedCategory = val; _selectedRating = null; });
-                    _fetchMyReviews();
-                  },
+                Row(
+                  children: [
+                    const Text('카테고리', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 15, color: Colors.black)),
+                    const SizedBox(width: 8),
+                    Container(
+                      height: 48,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.lightBlue, width: 1.2),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String?>(
+                          value: _selectedCategory ?? '전체',
+                          icon: const Icon(Icons.expand_more, color: Colors.black),
+                          isDense: true,
+                          isExpanded: false,
+                          alignment: Alignment.centerLeft,
+                          dropdownColor: Colors.white,
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),
+                          items: _categories.map((cat) => DropdownMenuItem(
+                            value: cat,
+                            child: Text(cat, style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')),
+                          )).toList(),
+                          onChanged: (val) {
+                            setState(() { _selectedCategory = val; _selectedRating = null; });
+                            _fetchMyReviews();
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -215,81 +239,9 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
                       itemCount: _reviews.length,
                       itemBuilder: (context, index) {
                         final review = _reviews[index];
-                        return Center(
-                          child: Container(
-                            width: 354,
-                            height: 145,
-                            margin: const EdgeInsets.only(bottom: 16.0),
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Color(0xFFE5EEFA), width: 1.5),
-                              borderRadius: BorderRadius.circular(12.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.08),
-                                  blurRadius: 6,
-                                  offset: const Offset(2, 2),
-                                ),
-                              ],
-                            ),
-                            child: SizedBox(
-                              height: 145,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Left side - Image
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: review['performancePoster'] != null
-                                      ? Image.network(review['performancePoster'], width: 120, height: 70, fit: BoxFit.cover)
-                                      : Image.asset('assets/images/poster1.png', width: 120, height: 70, fit: BoxFit.cover),
-                                  ),
-                                  const SizedBox(width: 8.0),
-                                  // Right side - Text content
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          review['performanceTitle'] ?? '제목 없음',
-                                          style: const TextStyle(
-                                            fontFamily: 'Spoqa Han Sans Neo',
-                                            fontSize: 14.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2.0),
-                                        Text(
-                                          '평점: ${review['rating'] ?? '-'}',
-                                          style: const TextStyle(
-                                            fontFamily: 'Spoqa Han Sans Neo',
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2.0),
-                                        Expanded(
-                                          child: Text(
-                                            review['content'] ?? '',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontFamily: 'Spoqa Han Sans Neo',
-                                              fontSize: 12.0,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        return ReviewCard(
+                          review: review,
+                          posterUrl: review['performancePoster'],
                         );
                       },
                     ),

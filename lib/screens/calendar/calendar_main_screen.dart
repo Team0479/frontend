@@ -166,6 +166,17 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
     return _allEvents[DateTime(day.year, day.month, day.day)] ?? [];
   }
 
+  String _formatWatchedAt(dynamic watchedAt) {
+    try {
+      final dt = DateTime.parse(watchedAt.toString());
+      final date = DateFormat('yyyy.MM.dd').format(dt);
+      final time = DateFormat('a h:mm', 'ko').format(dt);
+      return '$date $time';
+    } catch (e) {
+      return watchedAt.toString();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -246,56 +257,6 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                  width: 126,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        offset: const Offset(3, 3),
-                        blurRadius: 8,
-                        spreadRadius: 0,
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(126, 44),
-                      maximumSize: const Size(126, 44),
-                      backgroundColor: AppColors.lightBlue,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      elevation: 0,
-                      textStyle: const TextStyle(
-                        fontFamily: 'Spoqa Han Sans Neo',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                      ),
-                      padding: EdgeInsets.zero,
-                    ),
-                    onPressed: () async {
-                      final result = await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const CalendarScheduleScreen(),
-                        ),
-                      );
-                      if (result == true) {
-                        _fetchUserCalendar();
-                      }
-                    },
-                    child: const Text('일정 추가'),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
             if (_selectedDay != null) ...[
               Text(
                 DateFormat('yyyy년 MM월 dd일').format(_selectedDay!),
@@ -324,9 +285,17 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(event['performanceTitle'] ?? '', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w500, fontSize: 15)),
-                              if (event['performanceVenue'] != null) Text('장소 ${event['performanceVenue']}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w300, fontSize: 13)),
-                              if (event['memo'] != null) Text('메모 ${event['memo']}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w300, fontSize: 13)),
+                              Text(event['performanceTitle'] ?? '', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w700, fontSize: 16)),
+                              
+                              if (event['watchedAt'] != null) ...[
+                                Text('공연 일시: ' + _formatWatchedAt(event['watchedAt']), style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w400, fontSize: 14)),
+                              ],
+                              if (event['performanceVenue'] != null && event['performanceVenue'].toString().isNotEmpty) ...[
+                                Text('장소: ' + event['performanceVenue'], style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w400, fontSize: 14)),
+                              ],
+                              if (event['memo'] != null && event['memo'].toString().isNotEmpty) ...[
+                                Text('메모: ' + event['memo'], style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.w400, fontSize: 14)),
+                              ],
                             ],
                           ),
                         )),
@@ -364,6 +333,22 @@ class _CalendarMainScreenState extends State<CalendarMainScreen> {
             ],
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.lightBlue,
+        shape: const CircleBorder(),
+        onPressed: () async {
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const CalendarScheduleScreen(),
+            ),
+          );
+          if (result == true) {
+            _fetchUserCalendar();
+          }
+        },
+        child: Image.asset('assets/images/schedule_icon.png', width: 28, height: 28),
+        tooltip: '일정 등록',
       ),
     );
   }

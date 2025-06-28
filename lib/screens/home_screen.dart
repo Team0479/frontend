@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
+import '../screens/square/square_review_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -101,6 +102,7 @@ class _ChartTabState extends State<ChartTab> {
     '레저/캠핑': 'leisure_camping',
   };
   String? _nickname;
+  Map<int, String> _posterCache = {}; // performanceId -> posterUrl
 
   @override
   void initState() {
@@ -254,6 +256,24 @@ class _ChartTabState extends State<ChartTab> {
         _error = '에러 발생: $e';
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _fetchPerformancePoster(int performanceId) async {
+    final url = Uri.parse('http://3.37.103.25:8080/api/calendar/performances/$performanceId');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final posterUrl = data['posterUrl'] ?? data['imageUrl'] ?? data['performanceImageUrl'];
+        if (posterUrl != null && posterUrl.toString().isNotEmpty) {
+          setState(() {
+            _posterCache[performanceId] = posterUrl;
+          });
+        }
+      }
+    } catch (e) {
+      // ignore error
     }
   }
 
@@ -463,9 +483,15 @@ class _ChartTabState extends State<ChartTab> {
               : ListView.separated(
                   padding: EdgeInsets.zero,
                   itemCount: _items.length,
-                  separatorBuilder: (context, idx) => const SizedBox(height: 20),
+                  separatorBuilder: (context, idx) => const SizedBox(height: 0),
                   itemBuilder: (context, idx) {
                     final review = _items[idx];
+                    final perfId = review['performanceId'];
+                    final posterUrl = perfId != null ? _posterCache[perfId] : null;
+                    // 포스터 미리 받아오기
+                    if (perfId != null && !_posterCache.containsKey(perfId)) {
+                      _fetchPerformancePoster(perfId);
+                    }
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -498,104 +524,17 @@ class _ChartTabState extends State<ChartTab> {
                         ),
                         // 리뷰 카드
                         Expanded(
-                          child: Container(
-                            height: 122,
-                            margin: const EdgeInsets.only(right: 8.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColors.lightBlue, width: 1.5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  offset: const Offset(3, 3),
-                                  blurRadius: 8,
-                                  spreadRadius: 0,
+                          child: ReviewCard(
+                            review: review,
+                            posterUrl: posterUrl,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SquareReviewDetailScreen(review: review),
                                 ),
-                              ],
-                            ),
-                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 2),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  review['performanceTitle'] ?? '',
-                                  style: const TextStyle(
-                                    fontFamily: 'Spoqa Han Sans Neo',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 13,
-                                    color: Colors.black,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 1),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(6),
-                                      child: (() {
-                                        final imgUrl = review['performanceImageUrl'] ?? review['posterUrl'] ?? review['reviewImageUrl'];
-                                        if (imgUrl != null && imgUrl.toString().isNotEmpty) {
-                                          return Image.network(
-                                            imgUrl,
-                                            width: 60,
-                                            height: 60,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Image.asset('assets/images/poster1.png', width: 60, height: 60, fit: BoxFit.cover);
-                                            },
-                                          );
-                                        } else {
-                                          return Image.asset('assets/images/poster1.png', width: 60, height: 60, fit: BoxFit.cover);
-                                        }
-                                      })(),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            review['content'] ?? '',
-                                            style: const TextStyle(
-                                              fontFamily: 'Spoqa Han Sans Neo',
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 10,
-                                              color: Colors.black,
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 1),
-                                          Text(
-                                            '평점: ${review['rating'] ?? '-'} | 좋아요: ${review['likeCount'] ?? '-'}',
-                                            style: const TextStyle(
-                                              fontFamily: 'Spoqa Han Sans Neo',
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 8,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 1),
-                                Text('작성자: ${review['userNickname'] ?? ''} | 작성일: ${review['createdAt']?.toString().substring(0, 10) ?? ''}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Spoqa Han Sans Neo',
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 8,
-                                    color: Colors.black54,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -1065,6 +1004,143 @@ class _PodiumUser extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
       ],
+    );
+  }
+}
+
+// 공통 리뷰 카드 위젯
+class ReviewCard extends StatelessWidget {
+  final Map<String, dynamic> review;
+  final VoidCallback? onTap;
+  final String? posterUrl;
+
+  const ReviewCard({
+    super.key,
+    required this.review,
+    this.onTap,
+    this.posterUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // 데이터 파싱 (공연 제목 제거)
+    final String reviewTitle = review['title'] ?? '';
+    final String reviewContent = review['content'] ?? '';
+    final String userNickname = review['userNickname'] ?? '';
+    final String createdAt = (review['createdAt'] ?? '').toString().substring(0, 10);
+    final String rating = review['rating'] != null ? review['rating'].toString() : '-';
+    final String likeCount = review['likeCount'] != null ? review['likeCount'].toString() : '-';
+    final String imageUrl = posterUrl ?? review['performanceImageUrl'] ?? review['posterUrl'] ?? review['reviewImageUrl'] ?? review['performancePoster'] ?? '';
+
+    return Center(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 354,
+          margin: const EdgeInsets.only(bottom: 16.0),
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Color(0xFFE5EEFA), width: 1.5),
+            borderRadius: BorderRadius.circular(12.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 6,
+                offset: const Offset(2, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left side - Image
+              ClipRRect(
+                //borderRadius: BorderRadius.circular(8),
+                child: (imageUrl.isNotEmpty)
+                  ? Image.network(
+                      imageUrl,
+                      width: 80,
+                      height: 100,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Image.asset(
+                        'assets/images/poster1.png',
+                        width: 80,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Image.asset(
+                      'assets/images/poster1.png',
+                      width: 80,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+              ),
+              const SizedBox(width: 12.0),
+              // Right side - Text content
+              Expanded(
+                child: SizedBox(
+                  height: 100, // 이미지와 동일한 높이로 맞춤
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (reviewTitle.isNotEmpty) ...[
+                        Text(
+                          reviewTitle,
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.0,
+                            color: Colors.black,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4.0),
+                      ],
+                      Expanded(
+                        child: Text(
+                          reviewContent,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontFamily: 'Spoqa Han Sans Neo',
+                            fontSize: 12.0,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      Row(
+                        children: [
+                          Text('평점: $rating  좋아요: $likeCount',
+                            style: const TextStyle(
+                              fontFamily: 'Spoqa Han Sans Neo',
+                              fontSize: 11.0,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
+                      //const SizedBox(height: 4.0),
+                      Text('작성자: $userNickname  작성일: $createdAt',
+                        style: const TextStyle(
+                          fontFamily: 'Spoqa Han Sans Neo',
+                          fontSize: 10.0,
+                          color: Colors.black38,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 } 

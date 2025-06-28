@@ -290,71 +290,66 @@ class _SquareReviewDetailScreenState extends State<SquareReviewDetailScreen> {
                             ],
                           ),
                         ),
-                        
-                        // Review content (이미지 영역 완전히 제거)
-                        const SizedBox(height: 16),
-                        
+                      
                         // Performance title, Review title & content
                         Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                '공연 : ${_reviewDetail?['performanceTitle'] ?? ''}',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text(
-                                '평점 : ${_reviewDetail?['rating'] ?? ''}',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text(
-                                '후기 본문 : ${_reviewDetail?['content'] ?? ''}',
-                                style: const TextStyle(
-                                  fontFamily: 'Spoqa Han Sans Neo',
-                                  fontSize: 14.0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              const SizedBox(height: 16.0),
-                              Row(
-                                children: [
-                                  Text(
-                                    '좋아요 ${_likeCount}개 | 댓글 ${_reviewDetail?['commentCount'] ?? 0}개',
-                                    style: const TextStyle(
-                                      fontFamily: 'Spoqa Han Sans Neo',
-                                      fontSize: 12.0,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  GestureDetector(
-                                    onTap: _toggleLike,
-                                    child: Icon(
-                                      _isLiked ? Icons.favorite : Icons.favorite_border,
-                                      color: _isLiked ? Colors.red : Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              Text('공연제목', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black)),
+                              const SizedBox(height: 4),
+                              Text(_reviewDetail?['performanceTitle'] ?? '', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 15, color: Colors.black)),
+                              const SizedBox(height: 12),
+                              Text('리뷰 제목', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black)),
+                              const SizedBox(height: 4),
+                              Text(_reviewDetail?['title'] ?? '', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 15, color: Colors.black)),
+                              const SizedBox(height: 12),
+                              Text('리뷰 내용', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black)),
+                              const SizedBox(height: 4),
+                              Text(_reviewDetail?['content'] ?? '', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 15, color: Colors.black)),
+                              const SizedBox(height: 12),
+                              Text('평점', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black)),
+                              const SizedBox(height: 4),
+                              Text('${_reviewDetail?['rating'] ?? ''}', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 15, color: Colors.black)),
                             ],
                           ),
                         ),
                         
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Row(
+                            children: [
+                              Text('조회수 ${_reviewDetail?['viewCount'] ?? 0}',
+                                style: const TextStyle(
+                                  fontFamily: 'Spoqa Han Sans Neo',
+                                  fontSize: 12.0,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Text('좋아요 $_likeCount',
+                                style: const TextStyle(
+                                  fontFamily: 'Spoqa Han Sans Neo',
+                                  fontSize: 12.0,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              const Spacer(),
+                              GestureDetector(
+                                onTap: _toggleLike,
+                                child: Icon(
+                                  _isLiked ? Icons.favorite : Icons.favorite_border,
+                                  color: _isLiked ? Colors.red : Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                         
                         // Comments section
+                        const Divider(height: 32, thickness: 1, color: Color(0xFFE8E9EB)),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text(

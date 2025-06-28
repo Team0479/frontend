@@ -325,48 +325,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // 개발용 홈 이동 버튼 (화면 어디서나 접근 가능)
-          Positioned(
-            right: 16,
-            bottom: 32,
-            child: Opacity(
-              opacity: 0.7,
-              child: FloatingActionButton.small(
-                heroTag: "home_button",
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MainScreen()),
-                  );
-                },
-                child: const Icon(Icons.home),
-                tooltip: '개발용 홈 이동',
-              ),
-            ),
-          ),
-          // 개발용 캐릭터 선택 이동 버튼 (화면 어디서나 접근 가능)
-          Positioned(
-            left: 16,
-            bottom: 32,
-            child: Opacity(
-              opacity: 0.7,
-              child: FloatingActionButton.small(
-                heroTag: "character_button",
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CharacterSelectScreen()),
-                  );
-                },
-                child: const Icon(Icons.person),
-                tooltip: '개발용 캐릭터 선택 이동',
-              ),
-            ),
-          ),
+          
         ],
       ),
     );

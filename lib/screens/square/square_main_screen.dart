@@ -5,6 +5,7 @@ import 'review_write_screen.dart';
 import '../../theme/colors.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../home_screen.dart'; // ReviewCard 위젯을 사용하기 위해 import
 
 class SquareMainScreen extends StatefulWidget {
   final Map<String, dynamic>? newReview;
@@ -40,8 +41,17 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
         final List<dynamic> data = json.decode(response.body);
         setState(() {
           _reviews = data.map((e) => e as Map<String, dynamic>).toList();
+          _reviews.sort((a, b) {
+            final aDate = DateTime.tryParse(a['createdAt'] ?? '') ?? DateTime(1970);
+            final bDate = DateTime.tryParse(b['createdAt'] ?? '') ?? DateTime(1970);
+            return bDate.compareTo(aDate); // 최신순
+          });
           _isLoading = false;
         });
+        // 리뷰 정보 로그 출력
+        for (final review in _reviews) {
+          debugPrint('광장 리뷰 정보: ' + review.toString());
+        }
         // 리뷰별 공연 포스터 미리 받아오기
         for (final review in _reviews) {
           final perfId = review['performanceId'];
@@ -109,91 +119,17 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
                   final review = _reviews[index];
                   final perfId = review['performanceId'];
                   final posterUrl = perfId != null ? _posterCache[perfId] : null;
-                  return Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SquareReviewDetailScreen(review: review),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 354,
-                        height: 145,
-                        margin: const EdgeInsets.only(bottom: 16.0),
-                        padding: const EdgeInsets.all(16.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Color(0xFFE5EEFA), width: 1.5),
-                          borderRadius: BorderRadius.circular(12.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 6,
-                              offset: const Offset(2, 2),
-                            ),
-                          ],
+                  return ReviewCard(
+                    review: review,
+                    posterUrl: posterUrl,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SquareReviewDetailScreen(review: review),
                         ),
-                        child: SizedBox(
-                          height: 145,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Left side - Image
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: (posterUrl != null && posterUrl.isNotEmpty)
-                                  ? Image.network(posterUrl, width: 120, height: 70, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Image.asset('assets/images/poster1.png', width: 120, height: 70, fit: BoxFit.cover))
-                                  : Image.asset('assets/images/poster1.png', width: 120, height: 70, fit: BoxFit.cover),
-                              ),
-                              const SizedBox(width: 8.0),
-                              // Right side - Text content
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      review['performanceTitle'] ?? '제목 없음',
-                                      style: const TextStyle(
-                                        fontFamily: 'Spoqa Han Sans Neo',
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2.0),
-                                    Text(
-                                      review['userNickname'] ?? '',
-                                      style: const TextStyle(
-                                        fontFamily: 'Spoqa Han Sans Neo',
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 2.0),
-                                    Expanded(
-                                      child: Text(
-                                        review['content'] ?? '',
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontFamily: 'Spoqa Han Sans Neo',
-                                          fontSize: 12.0,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                      );
+                    },
                   );
                 },
               ),
@@ -201,13 +137,11 @@ class _SquareMainScreenState extends State<SquareMainScreen> {
         backgroundColor: AppColors.lightBlue,
         shape: const CircleBorder(),
         onPressed: () async {
-          final result = await Navigator.push(
+          await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const ReviewWriteScreen()),
           );
-          if (result != null && result is Map<String, dynamic>) {
-            _fetchReviews(); // 새로고침
-          }
+          _fetchReviews(); // 무조건 새로고침
         },
         child: Image.asset('assets/images/review_write_icon.png', width: 24, height: 24),
         tooltip: '리뷰 작성',

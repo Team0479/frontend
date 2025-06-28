@@ -31,6 +31,9 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
 
   int? _selectedPerformanceId;
 
+  DateTime? _performanceStartDate;
+  DateTime? _performanceEndDate;
+
   @override
   void initState() {
     super.initState();
@@ -87,22 +90,42 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
 
   // 드롭다운에서 공연 선택 시
   void _selectPerformanceFromDropdown(Map<String, dynamic> performance) {
+    debugPrint('선택한 공연 정보: ' + performance.toString());
     setState(() {
       _searchController.text = performance['title'] ?? '';
       _titleController.text = performance['title'] ?? '';
       _placeController.text = performance['venue'] ?? '';
       _selectedPerformanceId = performance['id'] ?? performance['performanceId'];
       _showDropdown = false;
+      // 공연 시작/종료일 저장
+      if (performance['startDate'] != null && performance['endDate'] != null) {
+        _performanceStartDate = DateTime.tryParse(performance['startDate']);
+        _performanceEndDate = DateTime.tryParse(performance['endDate']);
+        // 기존 선택된 날짜가 범위 밖이면 초기화
+        if (_selectedDate == null || _selectedDate!.isBefore(_performanceStartDate!) || _selectedDate!.isAfter(_performanceEndDate!)) {
+          _selectedDate = null;
+        }
+      } else {
+        _performanceStartDate = null;
+        _performanceEndDate = null;
+      }
     });
   }
 
   Future<void> _pickDate() async {
-    // 6월 21~30일만 선택 가능한 Picker
-    final List<DateTime> fakeDates = List.generate(10, (i) => DateTime(DateTime.now().year, 6, 21 + i));
+    // 공연 선택 시 startDate~endDate 범위로 후보 생성
+    List<DateTime> dateCandidates;
+    if (_performanceStartDate != null && _performanceEndDate != null) {
+      final days = _performanceEndDate!.difference(_performanceStartDate!).inDays;
+      dateCandidates = List.generate(days + 1, (i) => _performanceStartDate!.add(Duration(days: i)));
+    } else {
+      // 기본값: 오늘~10일
+      dateCandidates = List.generate(10, (i) => DateTime(DateTime.now().year, 6, 21 + i));
+    }
     int initialIndex = _selectedDate != null
-      ? fakeDates.indexWhere((d) => d.year == _selectedDate!.year && d.month == _selectedDate!.month && d.day == _selectedDate!.day)
+      ? dateCandidates.indexWhere((d) => d.year == _selectedDate!.year && d.month == _selectedDate!.month && d.day == _selectedDate!.day)
       : 0;
-    DateTime tempSelected = fakeDates[initialIndex >= 0 ? initialIndex : 0];
+    DateTime tempSelected = dateCandidates[initialIndex >= 0 ? initialIndex : 0];
     final pickerBg = AppColors.lightBlue;
     await showModalBottomSheet(
       context: context,
@@ -117,9 +140,9 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                   scrollController: FixedExtentScrollController(initialItem: initialIndex >= 0 ? initialIndex : 0),
                   itemExtent: 40,
                   onSelectedItemChanged: (idx) {
-                    tempSelected = fakeDates[idx];
+                    tempSelected = dateCandidates[idx];
                   },
-                  children: fakeDates.map((d) => Center(child: Text('${d.year}년 6월 ${d.day}일', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')))).toList(),
+                  children: dateCandidates.map((d) => Center(child: Text('${d.year}년 ${d.month}월 ${d.day}일', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')))).toList(),
                 ),
               ),
               TextButton(
@@ -143,6 +166,8 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
     int initialMinute = _selectedTime?.minute ?? 0;
     int tempHour = initialHour;
     int tempMinute = initialMinute;
+    int ampm = tempHour >= 12 ? 1 : 0; // 0: 오전, 1: 오후
+    int hour12 = tempHour % 12 == 0 ? 12 : tempHour % 12;
     final pickerBg = AppColors.lightBlue;
     await showModalBottomSheet(
       context: context,
@@ -157,20 +182,34 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 100,
+                      width: 80,
                       child: CupertinoPicker(
-                        scrollController: FixedExtentScrollController(initialItem: initialHour),
+                        scrollController: FixedExtentScrollController(initialItem: ampm),
                         itemExtent: 40,
                         onSelectedItemChanged: (idx) {
-                          tempHour = idx;
+                          ampm = idx;
                         },
-                        children: List.generate(24, (i) => Center(child: Text('$i 시', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')))),
+                        children: const [
+                          Center(child: Text('오전', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
+                          Center(child: Text('오후', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
+                        ],
                       ),
                     ),
                     SizedBox(
-                      width: 100,
+                      width: 80,
                       child: CupertinoPicker(
-                        scrollController: FixedExtentScrollController(initialItem: initialMinute),
+                        scrollController: FixedExtentScrollController(initialItem: hour12 - 1),
+                        itemExtent: 40,
+                        onSelectedItemChanged: (idx) {
+                          hour12 = idx + 1;
+                        },
+                        children: List.generate(12, (i) => Center(child: Text('${i + 1}시', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')))),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 80,
+                      child: CupertinoPicker(
+                        scrollController: FixedExtentScrollController(initialItem: tempMinute),
                         itemExtent: 40,
                         onSelectedItemChanged: (idx) {
                           tempMinute = idx;
@@ -183,8 +222,12 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
               ),
               TextButton(
                 onPressed: () {
+                  int selectedHour = hour12 % 12;
+                  if (ampm == 1) selectedHour += 12;
+                  if (hour12 == 12 && ampm == 0) selectedHour = 0; // 오전 12시는 0시
+                  if (hour12 == 12 && ampm == 1) selectedHour = 12; // 오후 12시는 12시
                   setState(() {
-                    _selectedTime = TimeOfDay(hour: tempHour, minute: tempMinute);
+                    _selectedTime = TimeOfDay(hour: selectedHour, minute: tempMinute);
                   });
                   Navigator.pop(context);
                 },
@@ -262,6 +305,8 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
     int initialMinute = _selectedTicketTime?.minute ?? 0;
     int tempHour = initialHour;
     int tempMinute = initialMinute;
+    int ampm = tempHour >= 12 ? 1 : 0; // 0: 오전, 1: 오후
+    int hour12 = tempHour % 12 == 0 ? 12 : tempHour % 12;
     final pickerBg = AppColors.lightBlue;
     await showModalBottomSheet(
       context: context,
@@ -276,20 +321,34 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 100,
+                      width: 80,
                       child: CupertinoPicker(
-                        scrollController: FixedExtentScrollController(initialItem: initialHour),
+                        scrollController: FixedExtentScrollController(initialItem: ampm),
                         itemExtent: 40,
                         onSelectedItemChanged: (idx) {
-                          tempHour = idx;
+                          ampm = idx;
                         },
-                        children: List.generate(24, (i) => Center(child: Text('$i 시', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')))),
+                        children: const [
+                          Center(child: Text('오전', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
+                          Center(child: Text('오후', style: TextStyle(fontFamily: 'Spoqa Han Sans Neo'))),
+                        ],
                       ),
                     ),
                     SizedBox(
-                      width: 100,
+                      width: 80,
                       child: CupertinoPicker(
-                        scrollController: FixedExtentScrollController(initialItem: initialMinute),
+                        scrollController: FixedExtentScrollController(initialItem: hour12 - 1),
+                        itemExtent: 40,
+                        onSelectedItemChanged: (idx) {
+                          hour12 = idx + 1;
+                        },
+                        children: List.generate(12, (i) => Center(child: Text('${i + 1}시', style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo')))),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 80,
+                      child: CupertinoPicker(
+                        scrollController: FixedExtentScrollController(initialItem: tempMinute),
                         itemExtent: 40,
                         onSelectedItemChanged: (idx) {
                           tempMinute = idx;
@@ -302,8 +361,12 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
               ),
               TextButton(
                 onPressed: () {
+                  int selectedHour = hour12 % 12;
+                  if (ampm == 1) selectedHour += 12;
+                  if (hour12 == 12 && ampm == 0) selectedHour = 0; // 오전 12시는 0시
+                  if (hour12 == 12 && ampm == 1) selectedHour = 12; // 오후 12시는 12시
                   setState(() {
-                    _selectedTicketTime = TimeOfDay(hour: tempHour, minute: tempMinute);
+                    _selectedTicketTime = TimeOfDay(hour: selectedHour, minute: tempMinute);
                   });
                   Navigator.pop(context);
                 },
@@ -552,18 +615,56 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                     },
                   ),
                 ),
-              const SizedBox(height: 8),
               // 공연명, 장소 입력창(수동 입력 불가 → 직접 입력 가능)
+              // SizedBox(
+              //   width: 348,
+              //   height: 48,
+              //   child: TextField(
+              //     controller: _titleController,
+              //     readOnly: false,
+              //     decoration: InputDecoration(
+              //       hintText: '공연명을 입력하세요',
+              //       hintStyle: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Color(0xFF9D9D9D)),
+              //       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+              //       border: OutlineInputBorder(
+              //         borderRadius: BorderRadius.circular(12),
+              //         borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+              //       ),
+              //       enabledBorder: OutlineInputBorder(
+              //         borderRadius: BorderRadius.circular(12),
+              //         borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
+              //       ),
+              //       focusedBorder: OutlineInputBorder(
+              //         borderRadius: BorderRadius.circular(12),
+              //         borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
+              //       ),
+              //       filled: true,
+              //       fillColor: Colors.white,
+              //     ),
+              //     style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo'),
+              //   ),
+              // ),
+              const SizedBox(height: 24),
+              const Text(
+                '공연 장소',
+                style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 17, fontWeight: FontWeight.w400),
+              ),
+              const SizedBox(height: 8),
               SizedBox(
                 width: 348,
                 height: 48,
                 child: TextField(
-                  controller: _titleController,
+                  controller: _placeController,
                   readOnly: false,
                   decoration: InputDecoration(
-                    hintText: '공연명을 입력하세요',
+                    hintText: '공연 장소를 입력하세요',
                     hintStyle: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Color(0xFF9D9D9D)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Image.asset('assets/images/pin_icon.png', width: 21, height: 21),
+                    ),
+                    prefixIconConstraints: const BoxConstraints(minWidth: 40, minHeight: 20),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
@@ -597,7 +698,7 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                     child: TextField(
                       readOnly: true,
                       decoration: InputDecoration(
-                        hintText: '날짜를 선택하세요',
+                        hintText: '공연 날짜를 선택하세요',
                         hintStyle: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Color(0xFF9D9D9D)),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                         prefixIcon: Padding(
@@ -645,7 +746,7 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                         prefixIcon: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: Image.asset('assets/images/calendar_icon.png', width: 21, height: 21),
+                          child: Image.asset('assets/images/time_icon.png', width: 21, height: 21),
                         ),
                         prefixIconConstraints: const BoxConstraints(minWidth: 40, minHeight: 20),
                         border: OutlineInputBorder(
@@ -674,45 +775,7 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
-                '공연 장소',
-                style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 17, fontWeight: FontWeight.w400),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: 348,
-                height: 48,
-                child: TextField(
-                  controller: _placeController,
-                  readOnly: false,
-                  decoration: InputDecoration(
-                    hintText: '공연 장소를 입력하세요',
-                    hintStyle: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Color(0xFF9D9D9D)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Image.asset('assets/images/pin_icon.png', width: 21, height: 21),
-                    ),
-                    prefixIconConstraints: const BoxConstraints(minWidth: 40, minHeight: 20),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE8E9EB)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                  style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo'),
-                ),
-              ),
-              const SizedBox(height: 24),
+              
               const Text(
                 '티켓팅 일정 등록',
                 style: TextStyle(fontFamily: 'Spoqa Han Sans Neo', fontSize: 17, fontWeight: FontWeight.w400),
@@ -727,7 +790,7 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                     child: TextField(
                       readOnly: true,
                       decoration: InputDecoration(
-                        hintText: '날짜를 선택하세요',
+                        hintText: '티켓팅 날짜를 선택하세요',
                         hintStyle: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Color(0xFF9D9D9D)),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                         prefixIcon: Padding(
@@ -770,12 +833,12 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                     child: TextField(
                       readOnly: true,
                       decoration: InputDecoration(
-                        hintText: '시간을 선택하세요',
+                        hintText: '티켓팅 시간을 선택하세요',
                         hintStyle: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Color(0xFF9D9D9D)),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                         prefixIcon: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                          child: Image.asset('assets/images/calendar_icon.png', width: 21, height: 21),
+                          child: Image.asset('assets/images/time_icon.png', width: 21, height: 21),
                         ),
                         prefixIconConstraints: const BoxConstraints(minWidth: 40, minHeight: 20),
                         border: OutlineInputBorder(
@@ -814,7 +877,7 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                 height: 48,
                 child: TextField(
                   controller: _memoController,
-                  maxLines: 3,
+                  maxLines: 1,
                   decoration: InputDecoration(
                     hintText: '내용을 입력하세요',
                     hintStyle: const TextStyle(fontFamily: 'Spoqa Han Sans Neo', color: Color(0xFF9D9D9D)),
@@ -837,7 +900,7 @@ class _CalendarScheduleScreenState extends State<CalendarScheduleScreen> {
                   style: const TextStyle(fontFamily: 'Spoqa Han Sans Neo'),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
